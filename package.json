@@ -12,6 +12,7 @@
     "devDependencies": {
         "@eslint/js": "^9.19.0",
         "@types/node": "^22.13.5",
+        "@types/vue-select": "^3.16.8",
         "@vue/eslint-config-typescript": "^14.3.0",
         "eslint": "^9.17.0",
         "eslint-config-prettier": "^10.0.1",
@@ -32,8 +33,10 @@
         "clsx": "^2.1.1",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.0",
+        "lodash-es": "^4.17.21",
         "lucide": "^0.468.0",
         "lucide-vue-next": "^0.468.0",
+        "pinia": "^3.0.2",
         "reka-ui": "^2.2.0",
         "tailwind-merge": "^2.5.5",
         "tailwindcss": "^4.1.1",
@@ -41,6 +44,7 @@
         "typescript": "^5.2.2",
         "vite": "^6.2.0",
         "vue": "^3.5.13",
+        "vue-toastification": "^2.0.0-rc.5",
         "ziggy-js": "^2.4.2"
     },
     "optionalDependencies": {
