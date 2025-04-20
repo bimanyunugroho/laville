@@ -4,14 +4,19 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, Code, Terminal } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed, onMounted } from 'vue';
+
+const page = usePage();
+const laravelVersion = computed(() => page.props.laravelVersion);
+const phpVersion = computed(() => page.props.phpVersion);
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/admin/dashboard',
         icon: LayoutGrid,
     },
 ];
@@ -27,6 +32,16 @@ const footerNavItems: NavItem[] = [
         href: 'https://laravel.com/docs/starter-kits',
         icon: BookOpen,
     },
+    {
+        title: `Laravel v${laravelVersion.value}`,
+        href: '',
+        icon: Code
+    },
+    {
+        title: `PHP v${phpVersion.value}`,
+        href: '',
+        icon: Terminal
+    }
 ];
 </script>
 
@@ -36,7 +51,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <Link :href="route('admin.dashboard')">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

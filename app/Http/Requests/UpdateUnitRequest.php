@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Unit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUnitRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateUnitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,14 @@ class UpdateUnitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code'  => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(Unit::class)->ignore(request()->route('unit')->id)],
+            'name'  => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(Unit::class)->ignore(request()->route('unit')->id)],
+            'is_active' => [$this->isUpdate() ? 'required' : 'sometimes', 'boolean']
         ];
+    }
+
+    private function isUpdate()
+    {
+        return request()->isMethod('PUT') || request()->isMethod('PATCH');
     }
 }

@@ -11,7 +11,7 @@ class StoreUnitConversionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreUnitConversionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'product_id'    => ['required', 'exists:product_id,id'],
+            'from_unit_id'  => ['required', 'exists:units,id'],
+            'to_unit_id'  => ['required', 'exists:units,id'],
+            'conversion_factor' => ['required', 'numeric', 'min:0']
         ];
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,19 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(Product::class)->ignore(request()->route('product')->id)],
+            'name' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(Product::class)->ignore(request()->route('product')->id)],
+            'variant_name' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(Product::class)->ignore(request()->route('product')->id)],
+            'default_unit_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
+            'purchase_price' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric', 'min:0'],
+            'selling_price' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric', 'min:0'],
+            'descripttion' => [$this->isUpdate() ? 'required' : 'sometimes', 'string'],
+            'is_active' => [$this->isUpdate() ? 'required' : 'sometimes', 'boolean']
         ];
+    }
+
+    private function isUpdate()
+    {
+        return request()->isMethod('PUT') || request()->isMethod('PATCH');
     }
 }

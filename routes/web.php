@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\UnitConversionController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -7,9 +12,15 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('master')->name('master.')->group(function () {
+        Route::resource('unit', UnitController::class);
+        Route::resource('produk', ProductController::class);
+        Route::resource('unit_konversi', UnitConversionController::class);
+    });
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

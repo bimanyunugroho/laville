@@ -24,6 +24,12 @@ export interface SharedData extends PageProps {
     auth: Auth;
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
+    laravelVersion: string;
+    phpVersion: string;
+    flash: {
+        success: string | null;
+        error: string | null;
+    };
 }
 
 export interface User {

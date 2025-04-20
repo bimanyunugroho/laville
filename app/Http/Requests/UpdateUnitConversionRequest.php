@@ -11,7 +11,7 @@ class UpdateUnitConversionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,15 @@ class UpdateUnitConversionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'product_id'    => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:product_id,id'],
+            'from_unit_id'  => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
+            'to_unit_id'  => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
+            'conversion_factor' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric', 'min:0']
         ];
+    }
+
+    private function isUpdate()
+    {
+        return request()->isMethod('PUT') || request()->isMethod('PATCH');
     }
 }

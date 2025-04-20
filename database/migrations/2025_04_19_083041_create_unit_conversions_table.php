@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('from_unit_id')->constrained('units')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('to_unit_id')->constrained('units')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('slug');
             $table->decimal('conversion_factor', 15, 5);
             $table->timestamps();
             $table->softDeletes();
