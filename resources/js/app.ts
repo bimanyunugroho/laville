@@ -9,7 +9,6 @@ import { initializeTheme } from './composables/useAppearance';
 import { createPinia } from 'pinia';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-import { VueSelect } from "vue-select";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const pinia = createPinia();
@@ -23,7 +22,6 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(pinia)
             .use(Toast, {})
-            .component("v-select", VueSelect)
             .mount(el);
     },
     progress: {
