@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Code, Terminal } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Code, Terminal, Layers, Box } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed, onMounted } from 'vue';
 
@@ -18,6 +18,16 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/admin/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Master Unit',
+        href: '/admin/master/unit',
+        icon: Layers,
+    },
+    {
+        title: 'Master Produk',
+        href: '/admin/master/produk',
+        icon: Box,
     },
 ];
 

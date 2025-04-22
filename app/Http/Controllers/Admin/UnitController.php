@@ -8,6 +8,7 @@ use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
 use App\Http\Resources\Admin\UnitResource;
 use App\Models\Unit;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,12 +20,15 @@ class UnitController extends Controller
     public function index(Request $request)
     {
         $queryUnits = Unit::query()
-            ->when($request->input('input'), function ($query, $search) {
-                $query->where('code', 'ilike', "%{$search}%")
-                    ->orWhere('name', 'ilike', "%{$search}%");
+            ->when($request->filled('search'), function (Builder $query) use ($request) {
+                $searchTerm = trim($request->input('search'));
+                $query->where(function (Builder $query) use ($searchTerm) {
+                    $query->where('code', 'ilike', "%{$searchTerm}%")
+                          ->orWhere('name', 'ilike', "%{$searchTerm}%");
+                });
             })
             ->orderBy('created_at', 'desc')
-            ->limit(10)
+            ->paginate(10)
             ->withQueryString();
 
         $dataUnits = $queryUnits->map(function($unit) {
@@ -61,14 +65,11 @@ class UnitController extends Controller
         return redirect()->route('admin.master.unit.index')->with('success', 'Data Unit Berhasil Disimpan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Unit $unit)
+    public function edit(Unit $unit)
     {
-        return Inertia::render('master/unit/Show', [
+        return Inertia::render('master/unit/Edit', [
             'title' => 'Master Satuan',
-            'desc'  => 'Detail Satuan',
+            'desc'  => 'Edit Satuan',
             'unit'  => new UnitResource($unit)
         ]);
     }
@@ -88,6 +89,6 @@ class UnitController extends Controller
     public function destroy(Unit $unit)
     {
         $unit->delete();
-        return redirect()->route('admin.master.unit.index')->with('success', 'Data Unit Berhasil Dihapus!');
+        return redirect()->route('admin.master.unit.index')->with('success', "Data Unit {$unit->name} Berhasil Dihapus!");
     }
 }
