@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitConversionController;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::resource('unit', UnitController::class);
         Route::resource('product', ProductController::class);
         Route::resource('unit_conversion', UnitConversionController::class);
+    });
+    
+    Route::prefix('inventory')->name('inventory.')->group(function(){
+        Route::resource('supplier', SupplierController::class);
     });
 });
 
