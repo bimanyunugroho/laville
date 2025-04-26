@@ -20,7 +20,9 @@ class UnitConversion extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom(['product_id', 'from_unit_id', 'to_unit_id'])
+            ->generateSlugsFrom(function ($model) {
+                return 'convert' . $model->product_id . '-' . $model->from_unit_id . '-' . $model->to_unit_id;
+            })
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }

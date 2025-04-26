@@ -8,6 +8,8 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\Admin\ProductResource;
 use App\Http\Resources\Admin\UnitResource;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\UnitCollection;
 use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -33,8 +35,8 @@ class ProductController extends Controller
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->paginate();
+            ->paginate(10)
+            ->withQueryString();
 
         $dataProducts = $queryProducts->map(function($queryProduct) {
             return new ProductResource($queryProduct);
@@ -56,11 +58,11 @@ class ProductController extends Controller
 
     public function create()
     {
-        $dataUnits = Unit::withoutTrashed()->get();
+        $dataUnits = Unit::all();
         return Inertia::render('master/product/Create', [
             'title' => 'Master Produk',
             'desc'  => 'Tambah Master Produk',
-            'units' => new UnitResource($dataUnits)
+            'units' => new UnitCollection($dataUnits)
         ]);
     }
 
@@ -70,7 +72,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $dataProduk = Product::create($request->validated());
-        return redirect()->route('admin.master.produk.index')->with('success', 'Data Produk Berhasil Disimpan!');
+        return redirect()->route('admin.master.product.index')->with('success', 'Data Produk Berhasil Disimpan!');
     }
 
     /**
@@ -78,8 +80,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $productWithDefaultUnitData = $product->with(['defaultUnit']);
-        return Inertia::render('', [
+        $productWithDefaultUnitData = $product->load(['defaultUnit']);
+        return Inertia::render('master/product/Show', [
             'title' => 'Master Produk',
             'desc'  => 'Detail Master Produk',
             'product'   => new ProductResource($productWithDefaultUnitData)
@@ -88,13 +90,13 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $dataUnits = Unit::withoutTrashed()->get();
-        $productWithDefaultUnitData = $product->with(['defaultUnit']);
+        $dataUnits = Unit::all();
+        $productWithDefaultUnitData = $product->load(['defaultUnit']);
         return Inertia::render('master/product/Edit', [
             'title' => 'Master Produk',
             'desc'  => 'Edit Master Produk',
             'product'   => new ProductResource($productWithDefaultUnitData),
-            'units' => new UnitResource($dataUnits)
+            'units' => new UnitCollection($dataUnits)
         ]);
     }
 
@@ -104,7 +106,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-        return redirect()->route('admin.master.produk.index')->with('success', 'Data Produk Berhasil Diubah!');
+        return redirect()->route('admin.master.product.index')->with('success', 'Data Produk Berhasil Diubah!');
     }
 
     /**
@@ -113,6 +115,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('admin.master.produk.index')->with('success', 'Data Produk Berhasil Dihapus!');
+        return redirect()->route('admin.master.product.index')->with('success', "Data Produk {$product->name} Berhasil Dihapus!");
     }
 }

@@ -21,7 +21,7 @@ class Product extends Model
         'default_unit_id',
         'purchase_price',
         'selling_price',
-        'descripttion',
+        'description',
         'is_active'
     ];
 

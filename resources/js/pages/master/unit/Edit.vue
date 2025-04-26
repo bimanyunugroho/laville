@@ -67,7 +67,7 @@ const handleSubmit = () => {
                                            dark:hover:bg-gray-600 transition-colors">
                                 Batal
                                 </Link>
-                                <BaseButton :loading="unitStore.isLoading" text="Simpan" loadingText="Mengubah..."
+                                <BaseButton :loading="unitStore.isLoading" text="Ubah" loadingText="Mengubah..."
                                     color="orange" />
                             </div>
                         </form>

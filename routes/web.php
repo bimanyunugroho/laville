@@ -17,8 +17,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('unit', UnitController::class);
-        Route::resource('produk', ProductController::class);
-        Route::resource('unit_konversi', UnitConversionController::class);
+        Route::resource('product', ProductController::class);
+        Route::resource('unit_conversion', UnitConversionController::class);
     });
 });
 

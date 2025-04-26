@@ -21,8 +21,8 @@ return new class extends Migration
                 ->constrained('units')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->decimal('purchase_price', 15, 2)->default(0);
-            $table->decimal('selling_price', 15, 2)->default(0);
+            $table->bigInteger('purchase_price')->default(0);
+            $table->bigInteger('selling_price')->default(0);
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

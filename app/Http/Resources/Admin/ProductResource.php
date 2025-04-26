@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'    => $this->id,
             'code' => $this->code,
             'name' => $this->name,
             'slug' => $this->slug,
@@ -28,7 +29,7 @@ class ProductResource extends JsonResource
             'defaultUnit'   => new UnitResource($this->whenLoaded('defaultUnit')),
             'purchase_price' => $this->purchase_price,
             'selling_price' => $this->selling_price,
-            'descripttion' => $this->descripttion,
+            'description' => $this->description,
             'is_active' => $this->is_active
         ];
     }
