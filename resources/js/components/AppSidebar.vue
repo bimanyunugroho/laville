@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck } from 'lucide-vue-next';
+import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed, ref, watch } from 'vue';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -31,6 +31,10 @@ const inventoryNavItems: NavItem[] = [
     { title: 'Supplier', href: '/admin/inventory/supplier', icon: Warehouse },
 ];
 
+const transaksiNavItems: NavItem[] = [
+    { title: 'Pelanggan', href: '/admin/transaksi/customer', icon: User2 }
+]
+
 const footerNavItems: NavItem[] = [
     { title: `Laravel v${laravelVersion.value}`, href: '', icon: Code },
     { title: `PHP v${phpVersion.value}`, href: '', icon: Terminal },
@@ -39,6 +43,7 @@ const footerNavItems: NavItem[] = [
 // Dropdown
 const isMasterDropdownOpen = ref(false);
 const isInventoryDropdownOpen = ref(false);
+const isTransaksiDropdownOpen = ref(false);
 
 const isActive = (href: string) => {
     const currentPath = currentRoute.value;
@@ -47,12 +52,15 @@ const isActive = (href: string) => {
 
 const isMasterActive = computed(() => masterNavItems.some(item => isActive(item.href)));
 const isInventoryActive = computed(() => inventoryNavItems.some(item => isActive(item.href)));
+const isTransaksiActive = computed(() => transaksiNavItems.some(item => isActive(item.href)));
 
 watch(isMasterActive, (active) => { if (active) isMasterDropdownOpen.value = true; }, { immediate: true });
 watch(isInventoryActive, (active) => { if (active) isInventoryDropdownOpen.value = true; }, { immediate: true });
+watch(isTransaksiActive, (active) => { if (active) isTransaksiDropdownOpen.value = true; }, { immediate: true });
 
 const toggleMasterDropdown = () => { isMasterDropdownOpen.value = !isMasterDropdownOpen.value; };
 const toggleInventoryDropdown = () => { isInventoryDropdownOpen.value = !isInventoryDropdownOpen.value; };
+const toggleTransaksiDropdown = () => { isTransaksiDropdownOpen.value = !isTransaksiDropdownOpen.value; };
 </script>
 
 <template>
@@ -93,6 +101,36 @@ const toggleInventoryDropdown = () => { isInventoryDropdownOpen.value = !isInven
                     <div v-if="isMasterDropdownOpen && sidebar.state.value === 'expanded'" class="pl-2">
                         <Link
                             v-for="item in masterNavItems"
+                            :key="item.title"
+                            :href="item.href"
+                            :class="[
+                                'flex items-center gap-2 px-2 py-1 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                                isActive(item.href) ? 'bg-gray-100 dark:bg-gray-800 text-primary' : ''
+                            ]"
+                        >
+                            <component :is="item.icon" class="h-4 w-4" />
+                            <span>{{ item.title }}</span>
+                        </Link>
+                    </div>
+
+                    <!-- Transaksi -->
+                    <button
+                        v-if="sidebar.state.value === 'expanded'"
+                        @click="toggleTransaksiDropdown"
+                        :class="[
+                            'flex items-center gap-2 px-2 py-1 rounded-md text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                            isTransaksiActive ? 'bg-gray-100 dark:bg-gray-800 text-primary' : ''
+                        ]"
+                    >
+                        <ShoppingBagIcon class="h-5 w-5" />
+                        <span>Transaksi</span>
+                        <ChevronDown v-if="isTransaksiDropdownOpen" class="ml-auto w-4 h-4" />
+                        <ChevronRight v-else class="ml-auto w-4 h-4" />
+                    </button>
+
+                    <div v-if="isTransaksiDropdownOpen && sidebar.state.value === 'expanded'" class="pl-2">
+                        <Link
+                            v-for="item in transaksiNavItems"
                             :key="item.title"
                             :href="item.href"
                             :class="[

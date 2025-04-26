@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SupplierController;
@@ -21,9 +22,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::resource('product', ProductController::class);
         Route::resource('unit_conversion', UnitConversionController::class);
     });
-    
+
     Route::prefix('inventory')->name('inventory.')->group(function(){
         Route::resource('supplier', SupplierController::class);
+    });
+
+    Route::prefix('transaksi')->name('transaksi.')->group(function() {
+        Route::resource('customer', CustomerController::class);
     });
 });
 
