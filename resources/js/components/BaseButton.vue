@@ -4,7 +4,7 @@ const props = defineProps<{
     type?: 'submit' | 'button' | 'reset'
     text?: string
     loadingText?: string
-    color?: 'blue' | 'red' | 'green' | 'orange'
+    color?: 'blue' | 'red' | 'green' | 'orange' | 'emerald'
 }>()
 
 const colorClass = {
@@ -27,6 +27,11 @@ const colorClass = {
         base: 'bg-orange-600 dark:bg-orange-500',
         hover: 'hover:bg-orange-700 dark:hover:bg-orange-600',
         ring: 'focus:ring-orange-500 dark:focus:ring-orange-400'
+    },
+    emerald: {
+        base: 'bg-emerald-600 dark:bg-emerald-500',
+        hover: 'hover:bg-emerald-700 dark:hover:bg-emerald-600',
+        ring: 'focus:ring-emerald-500 dark:focus:ring-emerald-400'
     }
 }
 

@@ -111,20 +111,17 @@ watch(() => props.suppliers, (newSuppliers) => {
                                             <Link :href="route('admin.inventory.supplier.show', supplier.slug)"
                                                 class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium text-purple-600 hover:text-white hover:bg-purple-600 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 transition-colors duration-150">
                                             <Eye class="w-4 h-4" />
-                                            <span>Detail</span>
                                             </Link>
 
                                             <Link :href="route('admin.inventory.supplier.edit', supplier.slug)"
                                                 class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium text-indigo-600 hover:text-white hover:bg-indigo-600 dark:text-indigo-400 dark:hover:text-white dark:hover:bg-indigo-500 transition-colors duration-150">
                                             <Pencil class="w-4 h-4" />
-                                            <span>Edit</span>
                                             </Link>
 
                                             <button @click="supplierStore.deleteSupplier(supplier)"
                                                 :disabled="supplierStore.isLoading"
                                                 class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium text-red-600 hover:text-white hover:bg-red-600 dark:text-red-400 dark:hover:text-white dark:hover:bg-red-500 transition-colors duration-150 disabled:opacity-50 cursor-pointer">
                                                 <Trash2 class="w-4 h-4" />
-                                                <span>Hapus</span>
                                             </button>
                                         </div>
                                     </td>

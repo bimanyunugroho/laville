@@ -76,7 +76,8 @@ export const useProductStore = defineStore('product', {
             const payload =  {
                 ...product,
                 default_unit_id: product.default_unit_id,
-                defaultUnit: undefined
+                defaultUnit: undefined,
+                unitConversions: undefined
             };
 
             router.post(route('admin.master.product.store'), payload, {
@@ -107,7 +108,8 @@ export const useProductStore = defineStore('product', {
             const payload = {
                 ...product,
                 default_unit_id: product.defaultUnit?.id || product.default_unit_id,
-                defaultUnit: undefined
+                defaultUnit: undefined,
+                unitConversions: undefined
             };
 
             router.put(route('admin.master.product.update', { slug }), payload, {

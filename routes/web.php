@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitConversionController;
@@ -25,6 +26,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::prefix('inventory')->name('inventory.')->group(function(){
         Route::resource('supplier', SupplierController::class);
+
+        // Purchase Order (PO)
+        Route::resource('purchase_order', PurchaseOrderController::class);
+        Route::get('purchase_order/{purchase_order}/approval', [PurchaseOrderController::class, 'showApprovalForm'])->name('purchase_order.approval.view');
+        Route::patch('purchase_order/{purchase_order}/approval', [PurchaseOrderController::class, 'submitApproval'])->name('purchase_order.approval.submit');
+
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {

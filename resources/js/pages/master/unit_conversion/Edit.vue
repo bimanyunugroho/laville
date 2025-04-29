@@ -38,7 +38,7 @@ watch(() => newUnitConversion.value.product_id, (newProductId) => {
 
         if (selectedProduct) {
             if (selectedProduct.defaultUnit?.id) {
-                newUnitConversion.value.to_unit_id = selectedProduct.defaultUnit?.id
+                newUnitConversion.value.from_unit_id = selectedProduct.defaultUnit?.id
             } else {
                 Swal.fire({
                     title: 'Perhatian!',
@@ -46,10 +46,15 @@ watch(() => newUnitConversion.value.product_id, (newProductId) => {
                     icon: 'warning',
                     confirmButtonText: 'OK'
                 });
-                newUnitConversion.value.to_unit_id = 0;
+                newUnitConversion.value.from_unit_id = 0;
             }
         }
     }
+});
+
+const selectedToUnitLabel = computed(() => {
+    const selectedUnit = props.to_units.find(unit => unit.id === newUnitConversion.value.to_unit_id);
+    return selectedUnit ? selectedUnit.name : '';
 });
 
 const handleSubmit = () => {
@@ -92,8 +97,8 @@ const handleSubmit = () => {
                                         id="from_unit_id"
                                         v-model="newUnitConversion.from_unit_id"
                                         :options="from_units"
-                                        label="Dari Satuan Dasar"
-                                        placeholder="Pilih Satuan Dasar"
+                                        label="Satuan Dasar Produk"
+                                        placeholder="Pilih Satuan"
                                         option-label="name"
                                         option-value="id"
                                         required
@@ -103,20 +108,24 @@ const handleSubmit = () => {
                                         id="to_unit_id"
                                         v-model="newUnitConversion.to_unit_id"
                                         :options="to_units"
-                                        label="Ke Satuan Dasar"
-                                        placeholder="Pilih Satuan Dasar"
+                                        label="Konversi Ke-Satuan"
+                                        placeholder="Pilih Satuan"
                                         option-label="name"
                                         option-value="id"
                                         required
                                     />
 
-                                    <TextNumber
-                                        id="conversion_factor"
-                                        v-model="newUnitConversion.conversion_factor"
-                                        label="Nilai Konversi"
-                                        placeholder="Masukkan Nilai Konversi"
-                                        required
-                                    />
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex-1">
+                                            <TextNumber id="conversion_factor"
+                                                v-model="newUnitConversion.conversion_factor" label="Nilai Konversi"
+                                                placeholder="Masukkan Nilai Konversi" required class="w-full" />
+                                        </div>
+                                        <span v-if="selectedToUnitLabel"
+                                            class="text-sm text-gray-600 dark:text-gray-200 italic ml-3">
+                                            {{ selectedToUnitLabel }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 

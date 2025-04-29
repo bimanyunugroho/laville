@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon } from 'lucide-vue-next';
+import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon, Package2 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed, ref, watch } from 'vue';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -29,6 +29,7 @@ const masterNavItems: NavItem[] = [
 
 const inventoryNavItems: NavItem[] = [
     { title: 'Supplier', href: '/admin/inventory/supplier', icon: Warehouse },
+    { title: 'Order Pembelian', href: '/admin/inventory/purchase_order', icon: Package2 },
 ];
 
 const transaksiNavItems: NavItem[] = [

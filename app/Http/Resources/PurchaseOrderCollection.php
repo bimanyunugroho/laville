@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\Admin\UnitConversionResource;
+use App\Http\Resources\Admin\PurchaseOrderResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UnitConversionCollection extends ResourceCollection
+class PurchaseOrderCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,8 +15,8 @@ class UnitConversionCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->map(function ($unitConversion) {
-            return new UnitConversionResource($unitConversion);
+        return $this->collection->map(function ($purchaseOrders) {
+            return new PurchaseOrderResource($purchaseOrders);
         })->all();
     }
 }
