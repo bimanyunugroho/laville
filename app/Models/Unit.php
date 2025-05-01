@@ -52,4 +52,13 @@ class Unit extends Model
         return $this->hasMany(UnitConversion::class, 'to_unit_id');
     }
 
+    public function stockCardDetails()
+    {
+        return $this->hasMany(StockCardDetail::class);
+    }
+    
+    public function currentStocks()
+    {
+        return $this->hasMany(CurrentStock::class);
+    }
 }

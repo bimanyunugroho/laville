@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\CurrentStockController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
+use App\Http\Controllers\Admin\StockCardController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitConversionController;
@@ -32,6 +34,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('purchase_order/{purchase_order}/approval', [PurchaseOrderController::class, 'showApprovalForm'])->name('purchase_order.approval.view');
         Route::patch('purchase_order/{purchase_order}/approval', [PurchaseOrderController::class, 'submitApproval'])->name('purchase_order.approval.submit');
 
+        Route::resource('current_stock', CurrentStockController::class);
+        Route::resource('stock_card', StockCardController::class);
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {

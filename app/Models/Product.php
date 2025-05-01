@@ -54,4 +54,19 @@ class Product extends Model
     {
         return $this->hasMany(UnitConversion::class);
     }
+
+    public function stockCards()
+    {
+        return $this->hasMany(StockCard::class);
+    }
+
+    public function currentStocks()
+    {
+        return $this->hasMany(CurrentStock::class);
+    }
+
+    public function stockCardDetails()
+    {
+        return $this->morphMany(StockCardDetail::class, 'reference');
+    }
 }

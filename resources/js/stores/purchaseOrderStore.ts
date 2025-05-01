@@ -13,47 +13,6 @@ interface PurchaseOrderState {
 
 const toast = useToast();
 
-function createPurchaseOrderFormData(purchase_order: PurchaseOrder): FormData {
-    const formData = new FormData();
-
-    const supplier_id = purchase_order.supplier_id || purchase_order.supplier?.id;
-    if (supplier_id !== undefined) {
-        formData.append('supplier_id', supplier_id.toString());
-    }
-
-    const user_id = purchase_order.user_id || purchase_order.user?.id;
-    if (user_id !== undefined) {
-        formData.append('user_id', user_id.toString());
-    }
-
-    const user_ack_id = purchase_order.user_ack_id || null;
-    if (user_ack_id !== null && user_ack_id !== undefined) {
-        formData.append('user_ack_id', user_ack_id.toString());
-    } else {
-        formData.append('user_ack_id', '');
-    }
-
-    if (purchase_order.details) {
-        formData.append('details', JSON.stringify(purchase_order.details));
-    }
-
-    Object.entries(purchase_order).forEach(([key, value]) => {
-        if (['supplier_id', 'user_id', 'user_ack_id', 'details', 'supplier', 'user', 'userAck'].includes(key)) {
-            return;
-        }
-
-        if (value !== undefined) {
-            if (typeof value === 'object' && value !== null) {
-                formData.append(key, JSON.stringify(value));
-            } else {
-                formData.append(key, value.toString());
-            }
-        }
-    });
-
-    return formData;
-}
-
 export const usePurchaseOrderStore = defineStore('purchase_order', {
     state: (): PurchaseOrderState => ({
         purchase_orders: {

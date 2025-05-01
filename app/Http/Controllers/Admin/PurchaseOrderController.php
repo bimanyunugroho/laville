@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\StatusPOEnum;
+use App\Events\PurchaseOrderApproved;
 use App\Helpers\PaginationData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApprovalPurchaseOrderRequest;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Inertia\Inertia;
 
 class PurchaseOrderController extends Controller
@@ -266,7 +268,16 @@ class PurchaseOrderController extends Controller
         DB::beginTransaction();
 
         try {
-            $purchaseOrder->update($request->validated());
+            $validated = $request->validated();
+            $purchaseOrder->update($validated);
+
+            if (
+                !empty($validated['user_ack_id']) &&
+                !empty($validated['ack_date']) &&
+                ($validated['status'] ?? null) === StatusPOEnum::RECEIVED
+            ) {
+                Event::dispatch(new PurchaseOrderApproved($purchaseOrder));
+            }
 
             DB::commit();
             return redirect()->route('admin.inventory.purchase_order.index')->with('success', 'Data Purchase Order Berhasil DiApprove!');

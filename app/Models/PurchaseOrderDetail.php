@@ -36,4 +36,9 @@ class PurchaseOrderDetail extends Model
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function stockCardDetails()
+    {
+        return $this->morphMany(StockCardDetail::class, 'reference');
+    }
 }

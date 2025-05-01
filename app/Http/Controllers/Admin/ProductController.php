@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\MasterProductNew;
 use App\Helpers\PaginationData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
@@ -13,6 +14,7 @@ use App\Http\Resources\UnitCollection;
 use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -72,6 +74,9 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $dataProduk = Product::create($request->validated());
+
+        Event::dispatch(new MasterProductNew($dataProduk));
+
         return redirect()->route('admin.master.product.index')->with('success', 'Data Produk Berhasil Disimpan!');
     }
 
