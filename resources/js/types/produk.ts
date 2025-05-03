@@ -1,4 +1,6 @@
+import { CurrentStock } from "./current_stock";
 import { Unit } from "./unit";
+import { UnitConversion } from "./unit_conversion";
 
 export interface Product {
     id: number;
@@ -8,6 +10,8 @@ export interface Product {
     variant_name: string;
     defaultUnit: Unit | null;
     default_unit_id?: number | null;
+    unitConversions: UnitConversion[];
+    currentStocks: CurrentStock[] | undefined;
     purchase_price: number;
     selling_price: number;
     description: string;

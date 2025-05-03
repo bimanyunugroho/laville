@@ -2,7 +2,7 @@
 interface Props {
     modelValue: string | number; // Accept both string and number
     id: string;
-    label: string;
+    label?: string;
     placeholder?: string;
     required?: boolean;
     error?: string;

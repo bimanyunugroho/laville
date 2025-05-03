@@ -8,8 +8,8 @@ export interface UnitConversion {
     from_unit_id?: number | null;
     to_unit_id?: number | null;
     product: Product | null;
-    fromUnit: Unit | null;
-    toUnit: Unit | null;
+    fromUnit?: Unit | null;
+    toUnit?: Unit | null;
     conversion_factor: number;
     created_at: string;
     updated_at: string;

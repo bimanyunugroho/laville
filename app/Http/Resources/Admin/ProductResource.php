@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Http\Resources\CurrentStockCollection;
+use App\Http\Resources\UnitConversionCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,6 +29,8 @@ class ProductResource extends JsonResource
             'slug' => $this->slug,
             'variant_name' => $this->variant_name,
             'defaultUnit'   => new UnitResource($this->whenLoaded('defaultUnit')),
+            'unitConversions'   => new UnitConversionCollection($this->whenLoaded('unitConversions')),
+            'currentStocks' => new CurrentStockCollection($this->whenLoaded('currentStocks')),
             'purchase_price' => $this->purchase_price,
             'selling_price' => $this->selling_price,
             'description' => $this->description,

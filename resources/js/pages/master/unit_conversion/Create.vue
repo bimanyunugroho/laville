@@ -36,7 +36,7 @@ watch(() => newUnitConversion.value.product_id, (newProductId) => {
 
         if (selectedProduct) {
             if (selectedProduct.defaultUnit?.id) {
-                newUnitConversion.value.to_unit_id = selectedProduct.defaultUnit?.id
+                newUnitConversion.value.from_unit_id = selectedProduct.defaultUnit?.id
             } else {
                 Swal.fire({
                     title: 'Perhatian!',
@@ -44,10 +44,15 @@ watch(() => newUnitConversion.value.product_id, (newProductId) => {
                     icon: 'warning',
                     confirmButtonText: 'OK'
                 });
-                newUnitConversion.value.to_unit_id = 0;
+                newUnitConversion.value.from_unit_id = 0;
             }
         }
     }
+});
+
+const selectedToUnitLabel = computed(() => {
+    const selectedUnit = props.to_units.find(unit => unit.id === newUnitConversion.value.to_unit_id);
+    return selectedUnit ? selectedUnit.name : '';
 });
 
 const handleSubmit = () => {
@@ -57,6 +62,7 @@ const handleSubmit = () => {
 
 <template>
     <AppLayout>
+
         <Head :title="title" />
 
         <div class="py-6">
@@ -75,67 +81,44 @@ const handleSubmit = () => {
                         <form @submit.prevent="handleSubmit" class="max-w-full space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-4">
-                                    <VSelect
-                                        id="product_id"
-                                        v-model="newUnitConversion.product_id"
-                                        :options="products"
-                                        label="Produk"
-                                        placeholder="Pilih Produk"
-                                        option-label="name"
-                                        option-value="id"
-                                        required
-                                    />
+                                    <VSelect id="product_id" v-model="newUnitConversion.product_id" :options="products"
+                                        label="Produk" placeholder="Pilih Produk" option-label="name" option-value="id"
+                                        required />
 
-                                    <VSelect
-                                        id="from_unit_id"
-                                        v-model="newUnitConversion.from_unit_id"
-                                        :options="from_units"
-                                        label="Dari Satuan Dasar"
-                                        placeholder="Pilih Satuan Dasar"
-                                        option-label="name"
-                                        option-value="id"
-                                        required
-                                    />
+                                    <VSelect id="from_unit_id" v-model="newUnitConversion.from_unit_id"
+                                        :options="from_units" label="Satuan Dasar Produk" placeholder="Pilih Satuan"
+                                        option-label="name" option-value="id" required />
 
-                                    <VSelect
-                                        id="to_unit_id"
-                                        v-model="newUnitConversion.to_unit_id"
-                                        :options="to_units"
-                                        label="Ke Satuan Dasar"
-                                        placeholder="Pilih Satuan Dasar"
-                                        option-label="name"
-                                        option-value="id"
-                                        required
-                                    />
+                                    <VSelect id="to_unit_id" v-model="newUnitConversion.to_unit_id" :options="to_units"
+                                        label="Konversi Ke-Satuan" placeholder="Pilih Satuan" option-label="name"
+                                        option-value="id" required />
 
-                                    <TextNumber
-                                        id="conversion_factor"
-                                        v-model="newUnitConversion.conversion_factor"
-                                        label="Nilai Konversi"
-                                        placeholder="Masukkan Nilai Konversi"
-                                        required
-                                    />
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex-1">
+                                            <TextNumber id="conversion_factor"
+                                                v-model="newUnitConversion.conversion_factor" label="Nilai Konversi"
+                                                placeholder="Masukkan Nilai Konversi" required class="w-full" />
+                                        </div>
+                                        <span v-if="selectedToUnitLabel"
+                                            class="text-sm text-gray-600 dark:text-gray-200 italic ml-3">
+                                            {{ selectedToUnitLabel }}
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-end space-x-3 pt-4">
-                                <Link
-                                    :href="route('admin.master.unit_conversion.index')"
-                                    class="inline-flex justify-center rounded-md border border-gray-300
+                                <Link :href="route('admin.master.unit_conversion.index')" class="inline-flex justify-center rounded-md border border-gray-300
                                            bg-white px-4 py-2 text-sm font-medium text-gray-700
                                            shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2
                                            focus:ring-primary-500 focus:ring-offset-2
                                            dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300
-                                           dark:hover:bg-gray-600 transition-colors"
-                                >
-                                    Batal
+                                           dark:hover:bg-gray-600 transition-colors">
+                                Batal
                                 </Link>
-                                <BaseButton
-                                    :loading="unitConversionStore.isLoading"
-                                    text="Simpan"
-                                    loadingText="Menyimpan..."
-                                    color="blue"
-                                />
+                                <BaseButton :loading="unitConversionStore.isLoading" text="Simpan"
+                                    loadingText="Menyimpan..." color="blue" />
                             </div>
                         </form>
                     </div>

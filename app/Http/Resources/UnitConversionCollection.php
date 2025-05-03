@@ -15,7 +15,7 @@ class UnitConversionCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection(function ($unitConversion) {
+        return $this->collection->map(function ($unitConversion) {
             return new UnitConversionResource($unitConversion);
         })->all();
     }

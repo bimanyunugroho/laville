@@ -7,6 +7,7 @@ interface Props {
     placeholder?: string;
     required?: boolean;
     error?: string;
+    readonly?: boolean;
 }
 
 defineProps<Props>();
@@ -26,7 +27,8 @@ defineEmits<{
                 @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" :required="required"
                 :placeholder="placeholder"
                 class="block w-full p-2 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 focus:ring-blue-500 focus:border-blue-500"
-                :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': error }" />
+                :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': error }"
+                :readonly="readonly" />
             <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
         </div>
     </div>

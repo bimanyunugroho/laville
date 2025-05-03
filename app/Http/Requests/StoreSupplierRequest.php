@@ -22,8 +22,8 @@ class StoreSupplierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string', 'unique:suppliers,id'],
-            'name' => ['required', 'string', 'unique:suppliers,id'],
+            'code' => ['required', 'string', 'unique:suppliers,code'],
+            'name' => ['required', 'string', 'unique:suppliers,name'],
             'phone' => ['nullable', 'string'],
             'email' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],

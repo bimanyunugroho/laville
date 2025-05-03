@@ -9,6 +9,8 @@ import { initializeTheme } from './composables/useAppearance';
 import { createPinia } from 'pinia';
 import Toast from "vue-toastification";
 import vSelect from "vue-select";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 import "vue-toastification/dist/index.css";
 import "vue-select/dist/vue-select.css";
 
@@ -25,6 +27,7 @@ createInertiaApp({
             .use(pinia)
             .use(Toast, {})
             .component("v-select", vSelect)
+            .component("VueDatePicker", VueDatePicker)
             .mount(el);
     },
     progress: {
@@ -32,5 +35,4 @@ createInertiaApp({
     },
 });
 
-// This will set light / dark mode on page load...
 initializeTheme();

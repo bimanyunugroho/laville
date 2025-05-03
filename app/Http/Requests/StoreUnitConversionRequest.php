@@ -24,8 +24,7 @@ class StoreUnitConversionRequest extends FormRequest
     {
         return [
             'product_id'    => ['required', 'exists:products,id'],
-            'from_unit_id'  => ['required', 'exists:units,id'],
-            'to_unit_id'  => [
+            'from_unit_id'  => [
                 'required',
                 'exists:units,id',
                 function($attribute, $value, $fail) {
@@ -36,6 +35,7 @@ class StoreUnitConversionRequest extends FormRequest
                     }
                 }
             ],
+            'to_unit_id'  => ['required', 'exists:units,id'],
             'conversion_factor' => ['required', 'numeric', 'min:0']
         ];
     }
