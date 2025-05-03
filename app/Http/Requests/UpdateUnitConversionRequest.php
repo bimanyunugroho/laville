@@ -24,8 +24,7 @@ class UpdateUnitConversionRequest extends FormRequest
     {
         return [
             'product_id'    => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:products,id'],
-            'from_unit_id'  => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
-            'to_unit_id'  => [
+            'from_unit_id'  => [
                 $this->isUpdate() ? 'required' : 'sometimes',
                 'exists:units,id',
                 function($attribute, $value, $fail) {
@@ -36,6 +35,7 @@ class UpdateUnitConversionRequest extends FormRequest
                     }
                 }
             ],
+            'to_unit_id'  => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
             'conversion_factor' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric', 'min:0']
         ];
     }
