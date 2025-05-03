@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class PurchaseOrder extends Model
+class GoodReceipt extends Model
 {
-    /** @use HasFactory<\Database\Factories\PurchaseOrderFactory> */
+    /** @use HasFactory<\Database\Factories\GoodReceiptFactory> */
     use HasFactory, SoftDeletes, HasSlug;
 
     protected $fillable = [
-        'po_number',
+        'receipt_number',
         'slug',
+        'purchase_order_id',
         'supplier_id',
         'user_id',
-        'po_date',
-        'expected_date',
+        'receipt_date',
         'user_ack_id',
         'ack_date',
         'user_reject_id',
@@ -28,12 +28,12 @@ class PurchaseOrder extends Model
         'tax',
         'discount',
         'total_net',
-        'status',
+        'status_receipt',
         'notes',
         'is_active'
     ];
 
-    protected function casts()
+    public function casts()
     {
         return [
             'is_active' => 'boolean'
@@ -48,24 +48,24 @@ class PurchaseOrder extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom(['po_number', 'supplier_id'])
+            ->generateSlugsFrom(['receipt_number', 'supplier_id'])
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }
 
-    public static function generatePoNumber()
+    public static function generateReceiptNumber()
     {
         $today = now()->format('Ymd');
-        $prefix = "INV/PO/{$today}/";
+        $prefix = "INV/GRM/{$today}/";
 
-        $lastPo = self::withTrashed()
+        $lastReceipt = self::withTrashed()
             ->whereDate('created_at', now()->toDateString())
-            ->where('po_number', 'like', "{$prefix}%")
-            ->orderBy('po_number', 'desc')
+            ->where('receipt_number', 'like', "{$prefix}%")
+            ->orderBy('receipt_number', 'desc')
             ->first();
 
-        if ($lastPo) {
-            $lastNumber = (int)substr($lastPo->po_number, -5);
+        if ($lastReceipt) {
+            $lastNumber = (int)substr($lastReceipt->receipt_number, -5);
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
@@ -74,6 +74,10 @@ class PurchaseOrder extends Model
         return $prefix . $newNumber;
     }
 
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
 
     public function supplier()
     {
@@ -97,11 +101,8 @@ class PurchaseOrder extends Model
 
     public function details()
     {
-        return $this->hasMany(PurchaseOrderDetail::class);
+        return $this->hasMany(GoodReceiptDetail::class);
     }
 
-    public function goodReceipts()
-    {
-        return $this->hasMany(GoodReceipt::class);
-    }
+
 }

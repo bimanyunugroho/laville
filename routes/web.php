@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CurrentStockController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GoodReceiptController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\StockCardController;
@@ -36,6 +37,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
         Route::resource('current_stock', CurrentStockController::class);
         Route::resource('stock_card', StockCardController::class);
+
+        // Good Receipt (Penerimaan Barang)
+        Route::resource('good_receipt', GoodReceiptController::class);
+        Route::get('good_receipt/{good_receipt}/approval', [GoodReceiptController::class, 'showApprovalForm'])->name('good_receipt.approval.view');
+        Route::patch('good_receipt/{good_receipt}/approval', [GoodReceiptController::class, 'submitApproval'])->name('good_receipt.approval.submit');
+
+        // Search Data Purchase Order by No.PO
+        Route::get('search_by_no_po', [GoodReceiptController::class, 'search_purchase_order_by_no_po'])->name('search_by_no_po');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {

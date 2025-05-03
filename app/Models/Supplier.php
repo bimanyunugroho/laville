@@ -36,4 +36,14 @@ class Supplier extends Model
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function goodReceipts()
+    {
+        return $this->hasMany(GoodReceipt::class);
+    }
 }

@@ -15,10 +15,14 @@ return new class extends Migration
         Schema::create('stock_cards', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->bigInteger('beginning_balance')->default(0); // in base unit
-            $table->bigInteger('in_balance')->default(0); // in base unit pemasukan
-            $table->bigInteger('out_balance')->default(0); // in base unit pengeluaran
-            $table->bigInteger('ending_balance')->default(0); // in base unit
+            $table->bigInteger('beginning_balance')->default(0);
+            $table->bigInteger('in_balance')->default(0);
+            $table->bigInteger('out_balance')->default(0);
+            $table->bigInteger('ending_balance')->default(0);
+            $table->bigInteger('beginning_base_balance')->default(0);
+            $table->bigInteger('in_base_balance')->default(0);
+            $table->bigInteger('out_base_balance')->default(0);
+            $table->bigInteger('ending_base_balance')->default(0);
             $table->string('slug');
             $table->unsignedTinyInteger('month');
             $table->year('year');

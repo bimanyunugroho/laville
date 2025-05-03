@@ -1,10 +1,13 @@
-import { Product } from './produk';
-import { Supplier } from './supplier';
-import { Unit } from './unit';
-import { User } from './user';
+import { User } from ".";
+import { Product } from "./produk";
+import { PurchaseOrder, PurchaseOrderDetail } from "./purchase_order";
+import { Supplier } from "./supplier";
+import { Unit } from "./unit";
 
-export interface PurchaseOrderDetail {
+export interface GoodReceiptDetail {
     id?: number;
+    good_receipt_id?: number | null;
+    purchase_order_detail_id: number | null;
     product_id: number;
     unit_id: number;
     quantity: number;
@@ -13,45 +16,48 @@ export interface PurchaseOrderDetail {
     subtotal: number;
     received_quantity: number;
     received_base_quantity: number;
+    created_at?: string | null;
+    purchaseOrderDetail?: PurchaseOrderDetail | undefined;
     product?: Product | undefined;
     unit?: Unit | undefined;
 }
 
-export interface PurchaseOrder {
+export interface GoodReceipt {
     id?: number;
-    po_number: string;
+    receipt_number: string;
     slug: string;
+    purchase_order_id: number | null;
     supplier_id: number | null;
     user_id: number | null;
+    receipt_date: string;
     user_ack_id: number | null;
-    po_date: string;
-    user_reject_id: number | null;
-    expected_date: string;
     ack_date: string | null;
+    user_reject_id: number | null;
     reject_date: string | null;
     subtotal: number;
     tax: number;
     discount: number;
     total_net: number;
-    status: string;
+    status_receipt: string;
     notes: string | null;
     is_active: boolean;
     created_at: string;
-    details: PurchaseOrderDetail[] | undefined;
+    purchaseOrder?: PurchaseOrder | undefined;
     supplier?: Supplier | undefined;
     user?: User | undefined;
     userAck?: User | undefined;
     userReject?: User | undefined;
+    details: GoodReceiptDetail[] | undefined;
 }
 
-export interface PurchaseOrderApproval {
+export interface GoodReceiptApproval {
     id?: number;
     slug: string;
     user_ack_id?: number | null;
     user_reject_id?: number | null;
     ack_date?: string | null;
     reject_date?: string | null;
-    status: string | null;
+    status_receipt: string | null;
 }
 
 export interface PaginationLink {
@@ -60,21 +66,21 @@ export interface PaginationLink {
     active: boolean;
 }
 
-export interface PurchaseOrderPagination {
-    data: PurchaseOrder[];
+export interface GoodReceiptPagination {
+    data: GoodReceipt[];
     links: PaginationLink[];
     current_page: number;
     per_page: number;
     total: number;
 }
 
-export interface PurchaseOrderPageProps {
+export interface GoodReceiptPageProps {
     title: string;
     desc: string;
-    purchase_orders: PurchaseOrderPagination;
+    good_receipts: GoodReceiptPagination;
     flash?: {
         success?: string;
         error?: string;
         warning?: string;
-    };
+    }
 }

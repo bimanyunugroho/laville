@@ -115,8 +115,8 @@ const receiveProgress = computed(() => {
 
     if (!po_date || !expected_date) return 0;
 
-    const poDate = new Date(po_date + 'T00:00:00');
-    const expectedDate = new Date(expected_date + 'T00:00:00');
+    const poDate = new Date(po_date);
+    const expectedDate = new Date(expected_date);
     const currentDate = new Date();
 
     if (isNaN(poDate.getTime()) || isNaN(expectedDate.getTime())) return 0;
@@ -156,129 +156,6 @@ const receiveProgress = computed(() => {
                                 </div>
                             </div>
                         </div>
-
-                        <form @submit.prevent="approvalForm">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div
-                                    class="space-y-4 dark:bg-gray-700 bg-white p-5 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
-                                    <!-- Header -->
-                                    <div class="border-b border-gray-200 dark:border-gray-600 pb-4 mb-4">
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            Form Persetujuan Purchase Order
-                                        </h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                            Silakan pilih status persetujuan untuk dokumen ini
-                                        </p>
-                                    </div>
-
-                                    <!-- Status Selection dengan tampilan yang lebih menarik -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Status Persetujuan:
-                                        </label>
-                                        <VButtonSelect v-model="formApprovalPurchaseOrder.status"
-                                            :options="statusOptions"
-                                            class="flex space-x-2 rounded-md overflow-hidden" />
-                                    </div>
-
-                                    <!-- Status Display dengan visualisasi yang lebih jelas -->
-                                    <div v-if="formApprovalPurchaseOrder.status"
-                                        class="space-y-3 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                        <div class="flex items-center gap-2">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full"
-                                                :class="{
-                                                    'bg-green-100 text-green-800 border border-green-300': formApprovalPurchaseOrder.status === 'RECEIVED',
-                                                    'bg-red-100 text-red-800 border border-red-300': formApprovalPurchaseOrder.status === 'CANCELED',
-                                                    'bg-blue-100 text-blue-800 border border-blue-300': formApprovalPurchaseOrder.status !== 'RECEIVED' && formApprovalPurchaseOrder.status !== 'CANCELED',
-                                                }">
-                                                <template v-if="formApprovalPurchaseOrder.status === 'RECEIVED'">
-                                                    <CheckCircle class="w-4 h-4 mr-1" />
-                                                </template>
-                                                <template v-else-if="formApprovalPurchaseOrder.status === 'CANCELED'">
-                                                    <XCircle class="w-4 h-4 mr-1" />
-                                                </template>
-                                                <template v-else>
-                                                    <Clock class="w-4 h-4 mr-1" />
-                                                </template>
-                                                Status: {{ formApprovalPurchaseOrder.status }}
-                                            </span>
-                                        </div>
-
-                                        <!-- Approval Information -->
-                                        <div v-if="formApprovalPurchaseOrder.user_ack_id && formApprovalPurchaseOrder.ack_date"
-                                            class="flex items-center gap-3 p-4 rounded-lg border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 w-fit">
-                                            <div class="flex flex-col items-center justify-center gap-2">
-                                                <User2 class="w-5 h-5 text-green-500 dark:text-green-400" />
-                                                <Calendar class="w-5 h-5 text-green-500 dark:text-green-400" />
-                                            </div>
-                                            <div class="text-sm text-green-700 dark:text-green-400">
-                                                <div><span class="font-medium">Disetujui</span> oleh <strong>{{
-                                                        props.currentUser?.name }}</strong></div>
-                                                <div class="italic">{{ formApprovalPurchaseOrder.ack_date }}</div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Rejection Information -->
-                                        <div v-if="formApprovalPurchaseOrder.user_reject_id && formApprovalPurchaseOrder.reject_date"
-                                            class="flex items-center gap-3 p-4 rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 w-fit">
-                                            <div class="flex flex-col items-center justify-center gap-2">
-                                                <User2 class="w-5 h-5 text-red-500 dark:text-red-400" />
-                                                <Calendar class="w-5 h-5 text-red-500 dark:text-red-400" />
-                                            </div>
-                                            <div class="text-sm text-red-700 dark:text-red-400">
-                                                <div><span class="font-medium">Dibatalkan</span> oleh <strong>{{
-                                                        props.currentUser?.name }}</strong></div>
-                                                <div class="italic">{{ formApprovalPurchaseOrder.reject_date }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Default Message yang muncul ketika belum ada pilihan -->
-                                    <div v-if="!formApprovalPurchaseOrder.status"
-                                        class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg my-4">
-                                        <div class="flex items-start gap-3">
-                                            <Info class="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5" />
-                                            <div class="text-sm text-blue-700 dark:text-blue-300">
-                                                <p class="font-medium">Pilih tindakan approval</p>
-                                                <p class="mt-1">Silakan pilih status persetujuan untuk melanjutkan
-                                                    proses approval purchase order</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Buttons with enhanced styling -->
-                                    <div
-                                        class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600 mt-4">
-                                        <Link :href="route('admin.inventory.purchase_order.index')" class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                            bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                            shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2
-                                            focus:ring-primary-500 focus:ring-offset-2
-                                            dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300
-                                            dark:hover:bg-gray-600 transition-colors">
-                                        <ArrowLeftCircle class="w-4 h-4 mr-2" />
-                                        Kembali
-                                        </Link>
-
-                                        <BaseButton :loading="purchaseOrderStore.isLoading"
-                                            :text="formApprovalPurchaseOrder.status === 'RECEIVED' ? 'Setujui' : formApprovalPurchaseOrder.status === 'CANCELED' ? 'REJECTED' : 'APPROVED'"
-                                            loadingText="Proses Approval..."
-                                            :color="formApprovalPurchaseOrder.status === 'RECEIVED' ? 'emerald' : formApprovalPurchaseOrder.status === 'CANCELED' ? 'red' : 'blue'"
-                                            :disabled="!formApprovalPurchaseOrder.status" class="flex items-center">
-                                            <template #icon>
-                                                <template v-if="formApprovalPurchaseOrder.status === 'PROSESS'">
-                                                    <CheckCircle class="w-4 h-4 mr-2" />
-                                                </template>
-                                                <template v-else-if="formApprovalPurchaseOrder.status === 'PROSESS'">
-                                                    <XCircle class="w-4 h-4 mr-2" />
-                                                </template>
-                                            </template>
-                                        </BaseButton>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-
 
                         <!-- Status Badge -->
                         <div class="mb-6">
@@ -531,10 +408,8 @@ const receiveProgress = computed(() => {
                                         {{ purchase_order.notes || 'No notes provided' }}
                                     </p>
                                 </div>
-                            </div>
-                            <div>
-                                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-3">User Information</h2>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+
+                                <div class="bg-gray-50 mt-4 dark:bg-gray-700 rounded-lg p-4">
                                     <div class="space-y-2">
                                         <div class="flex justify-between">
                                             <span class="text-sm text-gray-500 dark:text-gray-400">Pembuat PO:</span>
@@ -548,6 +423,137 @@ const receiveProgress = computed(() => {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div>
+                                <form @submit.prevent="approvalForm">
+                                    <div class="">
+                                        <div
+                                            class="space-y-4 dark:bg-gray-700 bg-white p-5 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
+                                            <!-- Header -->
+                                            <div class="border-b border-gray-200 dark:border-gray-600 pb-4 mb-4">
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                                    Form Persetujuan Purchase Order
+                                                </h3>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    Silakan pilih status persetujuan untuk dokumen ini
+                                                </p>
+                                            </div>
+
+                                            <!-- Status Selection dengan tampilan yang lebih menarik -->
+                                            <div class="mb-4">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Status Persetujuan:
+                                                </label>
+                                                <VButtonSelect v-model="formApprovalPurchaseOrder.status"
+                                                    :options="statusOptions"
+                                                    class="flex space-x-2 rounded-md overflow-hidden" />
+                                            </div>
+
+                                            <!-- Status Display dengan visualisasi yang lebih jelas -->
+                                            <div v-if="formApprovalPurchaseOrder.status"
+                                                class="space-y-3 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                                <div class="flex items-center gap-2">
+                                                    <span
+                                                        class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full"
+                                                        :class="{
+                                                            'bg-green-100 text-green-800 border border-green-300': formApprovalPurchaseOrder.status === 'RECEIVED',
+                                                            'bg-red-100 text-red-800 border border-red-300': formApprovalPurchaseOrder.status === 'CANCELED',
+                                                            'bg-blue-100 text-blue-800 border border-blue-300': formApprovalPurchaseOrder.status !== 'RECEIVED' && formApprovalPurchaseOrder.status !== 'CANCELED',
+                                                        }">
+                                                        <template
+                                                            v-if="formApprovalPurchaseOrder.status === 'RECEIVED'">
+                                                            <CheckCircle class="w-4 h-4 mr-1" />
+                                                        </template>
+                                                        <template
+                                                            v-else-if="formApprovalPurchaseOrder.status === 'CANCELED'">
+                                                            <XCircle class="w-4 h-4 mr-1" />
+                                                        </template>
+                                                        <template v-else>
+                                                            <Clock class="w-4 h-4 mr-1" />
+                                                        </template>
+                                                        Status: {{ formApprovalPurchaseOrder.status }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Approval Information -->
+                                                <div v-if="formApprovalPurchaseOrder.user_ack_id && formApprovalPurchaseOrder.ack_date"
+                                                    class="flex items-center gap-3 p-4 rounded-lg border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 w-fit">
+                                                    <div class="flex flex-col items-center justify-center gap-2">
+                                                        <User2 class="w-5 h-5 text-green-500 dark:text-green-400" />
+                                                        <Calendar class="w-5 h-5 text-green-500 dark:text-green-400" />
+                                                    </div>
+                                                    <div class="text-sm text-green-700 dark:text-green-400">
+                                                        <div><span class="font-medium">Disetujui</span> oleh <strong>{{
+                                                            props.currentUser?.name }}</strong></div>
+                                                        <div class="italic">{{ formApprovalPurchaseOrder.ack_date }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Rejection Information -->
+                                                <div v-if="formApprovalPurchaseOrder.user_reject_id && formApprovalPurchaseOrder.reject_date"
+                                                    class="flex items-center gap-3 p-4 rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 w-fit">
+                                                    <div class="flex flex-col items-center justify-center gap-2">
+                                                        <User2 class="w-5 h-5 text-red-500 dark:text-red-400" />
+                                                        <Calendar class="w-5 h-5 text-red-500 dark:text-red-400" />
+                                                    </div>
+                                                    <div class="text-sm text-red-700 dark:text-red-400">
+                                                        <div><span class="font-medium">Dibatalkan</span> oleh <strong>{{
+                                                            props.currentUser?.name }}</strong></div>
+                                                        <div class="italic">{{ formApprovalPurchaseOrder.reject_date }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Default Message yang muncul ketika belum ada pilihan -->
+                                            <div v-if="!formApprovalPurchaseOrder.status"
+                                                class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg my-4">
+                                                <div class="flex items-start gap-3">
+                                                    <Info class="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5" />
+                                                    <div class="text-sm text-blue-700 dark:text-blue-300">
+                                                        <p class="font-medium">Pilih tindakan approval</p>
+                                                        <p class="mt-1">Silakan pilih status persetujuan untuk
+                                                            melanjutkan
+                                                            proses approval purchase order</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Buttons with enhanced styling -->
+                                            <div
+                                                class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600 mt-4">
+                                                <Link :href="route('admin.inventory.purchase_order.index')" class="inline-flex items-center justify-center rounded-md border border-gray-300
+                                            bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                            shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2
+                                            focus:ring-primary-500 focus:ring-offset-2
+                                            dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300
+                                            dark:hover:bg-gray-600 transition-colors">
+                                                <ArrowLeftCircle class="w-4 h-4 mr-2" />
+                                                Kembali
+                                                </Link>
+
+                                                <BaseButton :loading="purchaseOrderStore.isLoading"
+                                                    :text="formApprovalPurchaseOrder.status === 'RECEIVED' ? 'Setujui' : formApprovalPurchaseOrder.status === 'CANCELED' ? 'REJECTED' : 'APPROVED'"
+                                                    loadingText="Proses Approval..."
+                                                    :color="formApprovalPurchaseOrder.status === 'RECEIVED' ? 'emerald' : formApprovalPurchaseOrder.status === 'CANCELED' ? 'red' : 'blue'"
+                                                    :disabled="!formApprovalPurchaseOrder.status"
+                                                    class="flex items-center">
+                                                    <template #icon>
+                                                        <template v-if="formApprovalPurchaseOrder.status === 'PROSESS'">
+                                                            <CheckCircle class="w-4 h-4 mr-2" />
+                                                        </template>
+                                                        <template
+                                                            v-else-if="formApprovalPurchaseOrder.status === 'PROSESS'">
+                                                            <XCircle class="w-4 h-4 mr-2" />
+                                                        </template>
+                                                    </template>
+                                                </BaseButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

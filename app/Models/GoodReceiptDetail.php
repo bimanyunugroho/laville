@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseOrderDetail extends Model
+class GoodReceiptDetail extends Model
 {
+    /** @use HasFactory<\Database\Factories\GoodReceiptDetailFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'purchase_order_id',
+        'good_receipt_id',
+        'purchase_order_detail_id',
         'product_id',
         'unit_id',
         'quantity',
@@ -22,9 +24,9 @@ class PurchaseOrderDetail extends Model
         'received_base_quantity'
     ];
 
-    public function purchaseOrder()
+    public function goodRecipt()
     {
-        return $this->belongsTo(PurchaseOrder::class);
+        return $this->belongsTo(GoodReceipt::class);
     }
 
     public function product()
@@ -42,8 +44,8 @@ class PurchaseOrderDetail extends Model
         return $this->morphMany(StockCardDetail::class, 'reference');
     }
 
-    public function goodReceiptDetails()
+    public function purchaseOrderDetail()
     {
-        return $this->hasMany(GoodReceiptDetail::class);
+        return $this->belongsTo(PurchaseOrderDetail::class);
     }
 }

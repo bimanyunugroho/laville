@@ -74,7 +74,8 @@ class StockCardController extends Controller
             'product',
             'stockCardDetails.unit',
             'product.defaultUnit',
-            'product.currentStocks'
+            'product.currentStocks',
+            'product.unitConversions'
         ]);
 
         return Inertia::render('inventory/stock_card/Show', [

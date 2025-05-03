@@ -28,7 +28,7 @@ class StockCardDetailResource extends JsonResource
             'reference_type' => $this->reference_type,
             'reference_status' => $this->reference_status,
             'unit_id' => $this->unit_id,
-            'transaction_date' => $this->transaction_date,
+            'transaction_date' => Carbon::parse($this->transaction_date)->format('Y-m-d'),
             'movement_type' => $this->movement_type,
             'quantity' => $this->quantity,
             'base_quantity' => $this->base_quantity,

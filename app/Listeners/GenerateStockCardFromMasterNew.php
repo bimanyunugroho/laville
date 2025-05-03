@@ -46,6 +46,10 @@ class GenerateStockCardFromMasterNew
                 'in_balance' => 0,
                 'out_balance' => 0,
                 'ending_balance' => 0,
+                'beginning_base_balance' => 0,
+                'in_base_balance' => 0,
+                'out_base_balance' => 0,
+                'ending_base_balance' => 0,
                 'status_running' => StatusRunningCurrentStockEnum::MASTER_BARU->value,
             ]
         );
@@ -79,7 +83,7 @@ class GenerateStockCardFromMasterNew
                 'status_running' => StatusRunningCurrentStockEnum::MASTER_BARU->value,
             ]
         );
-        
+
         $currentStock->update([
             'quantity' => $currentStock->quantity + 0,
             'base_quantity' => $currentStock->base_quantity + 0,

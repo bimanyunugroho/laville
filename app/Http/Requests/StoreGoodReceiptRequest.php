@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\StatusPOEnum;
-use Carbon\Carbon;
+use App\Enums\StatusReceiptEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
-class StorePurchaseOrderRequest extends FormRequest
+class StoreGoodReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,23 +24,24 @@ class StorePurchaseOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'po_number' => ['required', 'string', 'unique:purchase_orders,po_number'],
+            'receipt_number' => ['required', 'string', 'unique:good_receipts,receipt_number'],
+            'purchase_order_id' => ['required', 'string', 'exists:purchase_orders,id'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'user_id' => ['required', 'exists:users,id'],
+            'receipt_date' => ['required', 'date'],
             'user_ack_id' => ['nullable', 'exists:users,id'],
-            'po_date' => ['required', 'date_format:Y-m-d H:i:s'],
-            'expected_date' => ['required', 'date_format:Y-m-d H:i:s'],
-            'ack_date' => ['nullable', 'date_format:Y-m-d H:i:s'],
-            'subtotal' => ['required', 'numeric', 'min:0'],
+            'ack_date' => ['nullable', 'date'],
             'user_reject_id' => ['nullable', 'exists:users,id'],
-            'reject_date' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'reject_date' => ['nullable', 'date'],
+            'subtotal' => ['required', 'numeric', 'min:0'],
             'tax' => ['required', 'numeric'],
             'discount' => ['required', 'numeric'],
             'total_net' => ['required', 'numeric'],
-            'status' => ['required', Rule::in(StatusPOEnum::values())],
+            'status_receipt' => ['required', Rule::in(StatusReceiptEnum::values())],
             'notes' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
             'details' => ['required', 'array', 'min:1'],
+            'details.*.purchase_order_detail_id' => ['required', 'exists:purchase_order_details,id'],
             'details.*.product_id' => ['required', 'exists:products,id'],
             'details.*.unit_id' => ['required', 'exists:units,id'],
             'details.*.quantity' => ['required', 'numeric'],
@@ -54,14 +53,10 @@ class StorePurchaseOrderRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
+    public function attributes()
     {
         return [
+            'details.*.purchase_order_detail_id' => 'purchase order detail',
             'details.*.product_id' => 'product',
             'details.*.unit_id' => 'unit',
             'details.*.quantity' => 'quantity',

@@ -16,16 +16,16 @@ return new class extends Migration
         Schema::create('stock_card_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('stock_card_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->unsignedBigInteger('reference_id'); // ID dari transaksi Polymorshim
+            $table->unsignedBigInteger('reference_id');
             $table->string('reference_type');
             $table->enum('reference_status', ReferencesStockCardEnum::values());
-            $table->foreignId('unit_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete(); // base unit botol
+            $table->foreignId('unit_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamp('transaction_date');
             $table->enum('movement_type', MovementTypeStockCardEnum::values());
-            $table->bigInteger('quantity'); // quantity in specified unit mililiter
-            $table->bigInteger('base_quantity'); // quantity in base unit botol
-            $table->bigInteger('balance_quantity'); // quantity in specified unit mililiter
-            $table->bigInteger('balance_base_quantity'); // in base unit botol
+            $table->bigInteger('quantity');
+            $table->bigInteger('base_quantity');
+            $table->bigInteger('balance_quantity');
+            $table->bigInteger('balance_base_quantity');
             $table->string('notes');
             $table->timestamps();
             $table->softDeletes();

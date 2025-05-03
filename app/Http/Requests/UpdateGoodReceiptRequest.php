@@ -2,13 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PurchaseOrder;
-use App\Enums\StatusPOEnum;
+use App\Enums\StatusReceiptEnum;
+use App\Models\GoodReceipt;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
-class UpdatePurchaseOrderRequest extends FormRequest
+class UpdateGoodReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,23 +25,24 @@ class UpdatePurchaseOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'po_number' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(PurchaseOrder::class)->ignore(request()->route('purchase_order')->id)],
+            'receipt_number' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', Rule::unique(GoodReceipt::class)->ignore(request()->route('good_receipt')->id)],
+            'purchase_order_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'string', 'exists:purchase_orders,id'],
             'supplier_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:suppliers,id'],
             'user_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:users,id'],
+            'receipt_date' => [$this->isUpdate() ? 'required' : 'sometimes', 'date'],
             'user_ack_id' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'exists:users,id'],
-            'po_date' => [$this->isUpdate() ? 'required' : 'sometimes', 'date_format:Y-m-d H:i:s'],
-            'expected_date' => [$this->isUpdate() ? 'required' : 'sometimes', 'date_format:Y-m-d H:i:s'],
-            'ack_date' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'date_format:Y-m-d H:i:s'],
+            'ack_date' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'date'],
             'user_reject_id' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'exists:users,id'],
-            'reject_date' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'date_format:Y-m-d H:i:s'],
+            'reject_date' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'date'],
             'subtotal' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric', 'min:0'],
             'tax' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric'],
             'discount' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric'],
             'total_net' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric'],
-            'status' => [$this->isUpdate() ? 'required' : 'sometimes', Rule::in(StatusPOEnum::values())],
+            'status_receipt' => [$this->isUpdate() ? 'required' : 'sometimes', Rule::in(StatusReceiptEnum::values())],
             'notes' => [$this->isUpdate() ? 'nullable' : 'sometimes', 'string'],
             'is_active' => [$this->isUpdate() ? 'required' : 'sometimes', 'boolean'],
             'details' => [$this->isUpdate() ? 'required' : 'sometimes', 'array', 'min:1'],
+            'details.*.purchase_order_detail_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:purchase_order_details,id'],
             'details.*.product_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:products,id'],
             'details.*.unit_id' => [$this->isUpdate() ? 'required' : 'sometimes', 'exists:units,id'],
             'details.*.quantity' => [$this->isUpdate() ? 'required' : 'sometimes', 'numeric'],
@@ -54,14 +54,10 @@ class UpdatePurchaseOrderRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
+    public function attributes()
     {
         return [
+            'details.*.purchase_order_detail_id' => 'purchase order detail',
             'details.*.product_id' => 'product',
             'details.*.unit_id' => 'unit',
             'details.*.quantity' => 'quantity',

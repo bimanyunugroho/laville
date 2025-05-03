@@ -1,5 +1,6 @@
 import { Product } from "./produk";
 import { Unit } from "./unit";
+import { UnitConversion } from "./unit_conversion";
 
 export interface StockCardDetail {
     id?: number;
@@ -26,11 +27,16 @@ export interface StockCard {
     in_balance: number;
     out_balance: number;
     ending_balance: number;
+    beginning_base_balance: number;
+    in_base_balance: number;
+    out_base_balance: number;
+    ending_base_balance: number;
     month: number;
     year: number;
     status_running: string;
     stockCardDetails?: StockCardDetail[] | undefined;
     product?: Product | undefined;
+    unitConversions?: UnitConversion[] | undefined;
 }
 
 export interface PaginationLink {

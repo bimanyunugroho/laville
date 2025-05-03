@@ -1,0 +1,46 @@
+📦 STUDI KASUS MULTI PO DAN PENERIMAAN - PRODUK YANG SAMA
+
+1. PO Pertama Dibuat
+   - Tanggal: 2025-05-01
+   - Produk: Botol
+   - Jumlah: 10 Botol
+   - Transaksi: PO
+   - Efek ke StockCard: Tidak ada (hanya pencatatan PO)
+
+2. Penerimaan Barang Pertama
+   - Tanggal: 2025-05-03
+   - Produk: Botol
+   - Jumlah: 10 Botol
+   - Transaksi: Good Receipt
+   - Efek ke StockCard:
+     - in_balance += 10
+     - ending_balance = beginning_balance + in_balance - out_balance = 0 + 10 - 0 = 10
+
+3. PO Kedua Dibuat
+   - Tanggal: 2025-05-05
+   - Produk: Botol
+   - Jumlah: 5 Botol
+   - Transaksi: PO
+   - Efek ke StockCard: Tidak ada (hanya pencatatan PO)
+
+4. Penerimaan Barang Kedua
+   - Tanggal: 2025-05-06
+   - Produk: Botol
+   - Jumlah: 5 Botol
+   - Transaksi: Good Receipt
+   - Efek ke StockCard:
+     - in_balance += 5 (total jadi 15)
+     - ending_balance = beginning_balance + in_balance - out_balance = 0 + 15 - 0 = 15
+
+📘 TABEL stock_cards
+
+| id | product_id | beginning_balance | in_balance | out_balance | ending_balance | month | year | slug                      |
+|----|------------|-------------------|------------|-------------|----------------|-------|------|---------------------------|
+| 1  | 1          | 0                 | 15         | 0           | 15             | 5     | 2025 | card-stock-botol-may-2025 |
+
+📗 TABEL stock_card_details
+
+| id | stock_card_id | reference_type | reference_id | transaction_date | movement_type | quantity | balance_quantity | notes                      |
+|----|----------------|----------------|---------------|------------------|----------------|----------|------------------|-----------------------------|
+| 1  | 1              | GoodReceipt     | 1             | 2025-05-03       | IN             | 10       | 10               | Dari PO INVGRM20250501-001 |
+| 2  | 1              | GoodReceipt     | 2             | 2025-05-06       | IN             | 5        | 15               | Dari PO INVGRM20250505-002 |

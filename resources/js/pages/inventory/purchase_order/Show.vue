@@ -13,6 +13,8 @@ import BadgeInventory from '@/components/BadgeInventory.vue';
 import Badge from '@/components/Badge.vue';
 import { formatCurrency } from '@/helpers/currencyHelper';
 import { formatDate } from '@/helpers/dateStringHelper';
+import { Calendar, CheckCircle, Clock, RefreshCcw, SkipBack, User2, XCircle } from 'lucide-vue-next';
+import StatusBadge from '@/components/StatusBadge.vue';
 
 const props = defineProps<{
     title: string;
@@ -29,8 +31,8 @@ const receiveProgress = computed(() => {
 
     if (!po_date || !expected_date) return 0;
 
-    const poDate = new Date(po_date + 'T00:00:00');
-    const expectedDate = new Date(expected_date + 'T00:00:00');
+    const poDate = new Date(po_date);
+    const expectedDate = new Date(expected_date);
     const currentDate = new Date();
 
     if (isNaN(poDate.getTime()) || isNaN(expectedDate.getTime())) return 0;
@@ -70,8 +72,8 @@ const receiveProgress = computed(() => {
                                 </div>
 
                                 <div class="hidden sm:flex items-center space-x-3">
-                                    <Link v-if="purchase_order.status === 'PROSESS'" :href="route('admin.inventory.purchase_order.edit', purchase_order.slug)"
-                                        class="inline-flex items-center justify-center gap-2 rounded-md border border-transparent
+                                    <Link v-if="purchase_order.status === 'PROSESS'"
+                                        :href="route('admin.inventory.purchase_order.edit', purchase_order.slug)" class="inline-flex items-center justify-center gap-2 rounded-md border border-transparent
                                         bg-blue-600 px-4 py-2 text-sm font-medium text-white
                                         shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2
                                         focus:ring-blue-500 focus:ring-offset-2 transition-colors">
@@ -112,7 +114,7 @@ const receiveProgress = computed(() => {
 
                                 <div class="text-sm text-gray-600 dark:text-gray-300 text-right sm:text-left">
                                     <span class="font-medium">Dibuat pada:</span> {{
-                                    formatDate(purchase_order.created_at) }}
+                                        formatDate(purchase_order.created_at) }}
                                 </div>
                             </div>
 
@@ -134,7 +136,7 @@ const receiveProgress = computed(() => {
                         </div>
 
                         <!-- Purchase Order Info -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                                 <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Purchase Order
                                     Details</h2>
@@ -190,6 +192,45 @@ const receiveProgress = computed(() => {
                                 </div>
                                 <div v-else class="text-sm text-gray-500 dark:text-gray-400">
                                     No supplier information available
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Status Purchase Order
+                                </h2>
+                                <div v-if="purchase_order.status && purchase_order.status === 'RECEIVED'"
+                                    class="space-y-3 p-1 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <StatusBadge :status="purchase_order.status" label="Status" :icon="CheckCircle" />
+
+                                    <StatusBadge :status="purchase_order.status" label="Approval" :icon="User2"
+                                        :text="purchase_order.userAck?.name || '-'" />
+
+                                    <StatusBadge v-if="purchase_order.user_ack_id && purchase_order.ack_date"
+                                        :status="purchase_order.status" label="Approval" :icon="Calendar"
+                                        :text="purchase_order.ack_date" />
+
+                                    <StatusBadge v-if="purchase_order.user_reject_id && purchase_order.reject_date"
+                                        :status="purchase_order.status" label="Reject" :icon="Calendar"
+                                        :text="purchase_order.reject_date" />
+                                </div>
+                                <div v-if="purchase_order.status && purchase_order.status === 'CANCELED'"
+                                    class="space-y-3 p-1 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <StatusBadge :status="purchase_order.status" label="Status" :icon="XCircle" />
+
+                                    <StatusBadge :status="purchase_order.status" label="Approval" :icon="User2"
+                                        :text="purchase_order.userReject?.name || '-'" />
+
+                                    <StatusBadge v-if="purchase_order.user_ack_id && purchase_order.ack_date"
+                                        :status="purchase_order.status" label="Approval" :icon="Calendar"
+                                        :text="purchase_order.ack_date" />
+
+                                    <StatusBadge v-if="purchase_order.user_reject_id && purchase_order.reject_date"
+                                        :status="purchase_order.status" label="Reject" :icon="Calendar"
+                                        :text="purchase_order.reject_date" />
+                                </div>
+                                <div v-if="purchase_order.status && purchase_order.status === 'PROSESS'"
+                                    class="space-y-3 p-1 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <StatusBadge :status="purchase_order.status" label="Status" :icon="RefreshCcw" />
                                 </div>
                             </div>
                         </div>

@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\StatusPOEnum;
+use App\Enums\StatusReceiptEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ApprovalPurchaseOrderRequest extends FormRequest
+class ApprovalGoodReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +32,7 @@ class ApprovalPurchaseOrderRequest extends FormRequest
             'ack_date' => [
                 Rule::requiredIf(request()->filled('user_ack_id')),
                 'nullable',
-                'date_format:Y-m-d H:i:s'
+                'date'
             ],
             'user_reject_id' => [
                 Rule::requiredIf(request()->filled('reject_date')),
@@ -42,9 +42,9 @@ class ApprovalPurchaseOrderRequest extends FormRequest
             'reject_date' => [
                 Rule::requiredIf(request()->filled('user_reject_id')),
                 'nullable',
-                'date_format:Y-m-d H:i:s'
+                'date'
             ],
-            'status' => ['nullable', Rule::in(StatusPOEnum::values())]
+            'status_receipt' => ['nullable', Rule::in(StatusReceiptEnum::values())]
         ];
     }
 }

@@ -12,22 +12,16 @@ use Carbon\Carbon;
 
 class GenerateStockCardFromPurchaseOrder
 {
-    /**
-     * Create the event listener.
-     */
     public function __construct()
     {
         //
     }
 
-    /**
-     * Handle the event.
-     */
     public function handle(PurchaseOrderApproved $event): void
     {
         $purchaseOrder = $event->purchaseOrder;
         $noPurchaseOrder = $purchaseOrder->po_number;
-        $transactionDate = $purchaseOrder->po_date ?? now();
+        $transactionDate = $purchaseOrder->ack_date ?? now();
         $month = Carbon::parse($transactionDate)->month;
         $year = Carbon::parse($transactionDate)->year;
 
@@ -35,8 +29,8 @@ class GenerateStockCardFromPurchaseOrder
             $product = $detail->product;
             $unit = $detail->unit;
 
-            // Simpan atau update data StockCard
-            $stockCard = StockCard::updateOrCreate(
+            // Cek dan buat StockCard jika belum ada
+            $stockCard = StockCard::firstOrCreate(
                 [
                     'product_id' => $product->id,
                     'month' => $month,
@@ -47,11 +41,15 @@ class GenerateStockCardFromPurchaseOrder
                     'in_balance' => 0,
                     'out_balance' => 0,
                     'ending_balance' => 0,
+                    'beginning_base_balance' => 0,
+                    'in_base_balance' => 0,
+                    'out_base_balance' => 0,
+                    'ending_base_balance' => 0,
                     'status_running' => StatusRunningCurrentStockEnum::SEDANG_PROSES->value,
                 ]
             );
 
-            // Simpan data StockCardDetail
+            // Tambahkan detail ke StockCard
             $stockCard->stockCardDetails()->create([
                 'reference_id' => $detail->id,
                 'reference_type' => get_class($detail),
@@ -63,28 +61,7 @@ class GenerateStockCardFromPurchaseOrder
                 'base_quantity' => 0,
                 'balance_quantity' => 0,
                 'balance_base_quantity' => 0,
-                'notes' => 'PO @' . $noPurchaseOrder . ' Approved',
-            ]);
-
-            // Simpan atau update data CurrentStock
-            $currentStock = CurrentStock::updateOrCreate(
-                [
-                    'product_id' => $product->id,
-                    'unit_id' => $unit->id,
-                    'month' => $month,
-                    'year' => $year,
-                ],
-                [
-                    'quantity' => 0,
-                    'base_quantity' => 0,
-                    'status_running' => StatusRunningCurrentStockEnum::SEDANG_PROSES->value,
-                ]
-            );
-
-            // Menambahkan data untuk CurrentStock (menggunakan data yang relevan dari PO)
-            $currentStock->update([
-                'quantity' => $currentStock->quantity + 0,
-                'base_quantity' => $currentStock->base_quantity + 0,
+                'notes' => 'PO @' . $noPurchaseOrder,
             ]);
         }
     }

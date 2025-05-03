@@ -139,7 +139,7 @@ class PurchaseOrderController extends Controller
             'details.product',
             'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit',
+            'details.product.unitConversions.toUnit'
         ]);
 
         return Inertia::render('inventory/purchase_order/Show', [
@@ -272,9 +272,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->update($validated);
 
             if (
-                !empty($validated['user_ack_id']) &&
-                !empty($validated['ack_date']) &&
-                ($validated['status'] ?? null) === StatusPOEnum::RECEIVED
+                !empty($validated['user_ack_id'])
             ) {
                 Event::dispatch(new PurchaseOrderApproved($purchaseOrder));
             }

@@ -1,22 +1,27 @@
-import { PaginationLink, PurchaseOrder, PurchaseOrderApproval, PurchaseOrderPageProps, PurchaseOrderPagination } from '@/types/purchase_order';
+import { GoodReceipt, GoodReceiptApproval, GoodReceiptPageProps, GoodReceiptPagination, PaginationLink } from '@/types/good_receipt';
+import { PurchaseOrder } from '@/types/purchase_order';
 import { router } from '@inertiajs/vue3';
-import { debounce } from 'lodash';
+import axios from 'axios';
+import { debounce, isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 import Swal from 'sweetalert2';
 import { useToast } from 'vue-toastification';
 
-interface PurchaseOrderState {
-    purchase_orders: PurchaseOrderPagination;
+interface GoodReceiptState {
+    good_receipts: GoodReceiptPagination;
     searchQuery: string;
     isLoading: boolean;
+    purchaseOrderQuery: string;
+    purchaseOrderResult: PurchaseOrder | null;
+    purchaseOrderSearchLoading: boolean;
 }
 
 const toast = useToast();
 
-export const usePurchaseOrderStore = defineStore('purchase_order', {
-    state: (): PurchaseOrderState => ({
-        purchase_orders: {
-            data: [] as PurchaseOrder[],
+export const useGoodReceiptStore = defineStore('good_receipt', {
+    state: (): GoodReceiptState => ({
+        good_receipts: {
+            data: [] as GoodReceipt[],
             links: [] as PaginationLink[],
             current_page: 1,
             per_page: 10,
@@ -24,11 +29,14 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
         },
         searchQuery: '',
         isLoading: false,
+        purchaseOrderQuery: '',
+        purchaseOrderResult: null,
+        purchaseOrderSearchLoading: false,
     }),
 
     actions: {
-        initializeFromProps(props: PurchaseOrderPageProps) {
-            this.purchase_orders = props.purchase_orders;
+        initializeFromProps(props: GoodReceiptPageProps) {
+            this.good_receipts = props.good_receipts;
         },
 
         setSearchQuery(query: string) {
@@ -36,10 +44,10 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             this.debounceSearch(query);
         },
 
-        debounceSearch: debounce(function (this: PurchaseOrderState & { debounceSearch: Function }, query: string) {
+        debounceSearch: debounce(function (this: GoodReceiptState & { debounceSearch: Function }, query: string) {
             this.isLoading = true;
             router.get(
-                route('admin.inventory.purchase_order.index'),
+                route('admin.inventory.good_receipt.index'),
                 { search: query },
                 {
                     preserveState: true,
@@ -70,7 +78,58 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             });
         },
 
-        createPurchaseOrder(purchase_order: Partial<PurchaseOrder>) {
+        setPurchaseOrderQuery(query: string) {
+            this.purchaseOrderQuery = query;
+            if (query) {
+                this.debouncePOSearch(query);
+            } else {
+                this.purchaseOrderResult = null;
+            }
+        },
+
+        debouncePOSearch: debounce(function (this: GoodReceiptState & { debouncePOSearch: Function }, query: string) {
+            if (!query) return;
+
+            (this as any).searchNoPurchaseOrder();
+        }, 300),
+
+        searchNoPurchaseOrder() {
+            if (!this.purchaseOrderQuery) {
+                this.purchaseOrderResult = null;
+                return;
+            }
+
+            this.purchaseOrderSearchLoading = true;
+
+            axios
+                .get(route('admin.inventory.search_by_no_po'), {
+                    params: { po_number: this.purchaseOrderQuery },
+                })
+                .then((response) => {
+                    const data = response.data.data;
+
+                    if (!data || data.length === 0) {
+                        toast.warning(response.data.message || 'Purchase Order tidak ditemukan');
+                        this.purchaseOrderResult = null;
+                    } else {
+                        this.purchaseOrderResult = data[0];
+                    }
+                })
+                .catch((error) => {
+                    toast.error(error);
+                    this.purchaseOrderResult = null;
+                })
+                .finally(() => {
+                    this.purchaseOrderSearchLoading = false;
+                });
+        },
+
+        clearPurchaseOrderSearch() {
+            this.purchaseOrderResult = null;
+            this.purchaseOrderQuery = '';
+        },
+
+        createGoodReceipt(good_receipt: Partial<GoodReceipt>) {
             this.isLoading = true;
 
             const formatDateWithCurrentTime = (dateString: string | undefined | null) => {
@@ -86,12 +145,13 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             const formData = new FormData();
 
             const payload = {
-                ...purchase_order,
-                supplier_id: purchase_order.supplier_id ?? purchase_order.supplier?.id,
-                user_id: purchase_order.user_id ?? purchase_order.user?.id,
-                user_ack_id: purchase_order.user_ack_id ?? null,
-                po_date: formatDateWithCurrentTime(purchase_order.po_date),
-                expected_date: formatDateWithCurrentTime(purchase_order.expected_date)
+                ...good_receipt,
+                purchase_order_id: good_receipt.purchase_order_id ?? good_receipt.purchaseOrder?.id,
+                supplier_id: good_receipt.supplier_id ?? good_receipt.supplier?.id,
+                user_id: good_receipt.user_id ?? good_receipt.user?.id,
+                user_ack_id: good_receipt.user_ack_id ?? null,
+                po_date: formatDateWithCurrentTime(good_receipt.receipt_date),
+                receipt_date: formatDateWithCurrentTime(good_receipt.receipt_date)
             };
 
             delete payload.supplier;
@@ -116,8 +176,9 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             });
 
             // Tangani details array
-            if (purchase_order.details && Array.isArray(purchase_order.details)) {
-                purchase_order.details.forEach((detail, index) => {
+            if (good_receipt.details && Array.isArray(good_receipt.details)) {
+                good_receipt.details.forEach((detail, index) => {
+                    formData.append(`details[${index}][purchase_order_detail_id]`, String(detail.purchase_order_detail_id));
                     formData.append(`details[${index}][product_id]`, String(detail.product_id));
                     formData.append(`details[${index}][unit_id]`, String(detail.unit_id));
                     formData.append(`details[${index}][quantity]`, String(detail.quantity));
@@ -134,7 +195,7 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                 });
             }
 
-            router.post(route('admin.inventory.purchase_order.store'), formData, {
+            router.post(route('admin.inventory.good_receipt.store'), formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -153,13 +214,13 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                         const firstErrorMessage = Array.isArray(firstErrorArray) ? firstErrorArray[0] : firstErrorArray;
                         toast.error(firstErrorMessage);
                     } else {
-                        toast.error(`Gagal menambahkan satuan ${purchase_order.po_number}`);
+                        toast.error(`Gagal menambahkan penerimaan barang ${good_receipt.receipt_number}`);
                     }
                 },
             });
         },
 
-        editPurchaseOrder(slug: string, purchase_order: Partial<PurchaseOrder>) {
+        editGoodReceipt(slug: string, good_receipt: Partial<GoodReceipt>) {
             this.isLoading = true;
 
             const formatDateWithCurrentTime = (dateString: string | undefined | null) => {
@@ -175,14 +236,16 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             const formDataEdit = new FormData();
 
             const payload = {
-                ...purchase_order,
-                supplier_id: purchase_order.supplier_id ?? purchase_order.supplier?.id,
-                user_id: purchase_order.user_id ?? purchase_order.user?.id,
-                user_ack_id: purchase_order.user_ack_id ?? null,
-                po_date: formatDateWithCurrentTime(purchase_order.po_date),
-                expected_date: formatDateWithCurrentTime(purchase_order.expected_date)
+                ...good_receipt,
+                purchase_order_id: good_receipt.purchase_order_id ?? good_receipt.purchaseOrder?.id,
+                supplier_id: good_receipt.supplier_id ?? good_receipt.supplier?.id,
+                user_id: good_receipt.user_id ?? good_receipt.user?.id,
+                user_ack_id: good_receipt.user_ack_id ?? null,
+                po_date: formatDateWithCurrentTime(good_receipt.receipt_date),
+                receipt_date: formatDateWithCurrentTime(good_receipt.receipt_date)
             };
 
+            delete payload.supplier;
             delete payload.user;
             delete payload.userAck;
             delete payload.details;
@@ -193,7 +256,7 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
 
                     if (typeof value === 'boolean') {
                         formattedValue = value ? '1' : '0';
-                    } else if (value === null || value === '' || value === undefined) {
+                    } else if (value === null) {
                         formattedValue = '';
                     } else {
                         formattedValue = String(value);
@@ -204,8 +267,9 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             });
 
             // Tangani details array
-            if (purchase_order.details && Array.isArray(purchase_order.details)) {
-                purchase_order.details.forEach((detail, index) => {
+            if (good_receipt.details && Array.isArray(good_receipt.details)) {
+                good_receipt.details.forEach((detail, index) => {
+                    formDataEdit.append(`details[${index}][purchase_order_detail_id]`, String(detail.purchase_order_detail_id));
                     formDataEdit.append(`details[${index}][product_id]`, String(detail.product_id));
                     formDataEdit.append(`details[${index}][unit_id]`, String(detail.unit_id));
                     formDataEdit.append(`details[${index}][quantity]`, String(detail.quantity));
@@ -221,8 +285,9 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                     }
                 });
             }
+
             formDataEdit.append('_method', 'PUT');
-            router.post(route('admin.inventory.purchase_order.update', { purchase_order: slug }), formDataEdit, {
+            router.post(route('admin.inventory.good_receipt.update', { good_receipt: slug }), formDataEdit, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -241,16 +306,16 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                         const firstErrorMessage = Array.isArray(firstErrorArray) ? firstErrorArray[0] : firstErrorArray;
                         toast.error(firstErrorMessage);
                     } else {
-                        toast.error(`Gagal menambahkan data purchase order ${purchase_order.po_number}`);
+                        toast.error(`Gagal menambahkan penerimaan barang ${good_receipt.receipt_number}`);
                     }
                 },
             });
         },
 
-        async deletePurchaseOrder(purchase_order: PurchaseOrder) {
+        async deleteGoodReceipt(good_receipt: GoodReceipt) {
             const result = await Swal.fire({
                 title: 'Perhatian',
-                html: `Apakah Anda yakin ingin menghapus PO <strong>${purchase_order.po_number}</strong>?`,
+                html: `Apakah Anda yakin ingin menghapus Penerimaan Barang <strong>${good_receipt.receipt_number}</strong>?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -262,7 +327,7 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             if (result.isConfirmed) {
                 try {
                     this.isLoading = true;
-                    router.delete(route('admin.inventory.purchase_order.destroy', purchase_order.slug), {
+                    router.delete(route('admin.inventory.good_receipt.destroy', good_receipt.slug), {
                         preserveState: true,
                         preserveScroll: true,
                         onSuccess: (page: any) => {
@@ -278,7 +343,7 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                                 const firstErrorMessage = Array.isArray(firstErrorArray) ? firstErrorArray[0] : firstErrorArray;
                                 toast.error(firstErrorMessage);
                             } else {
-                                toast.error(`Gagal menghapus data purchase order ${purchase_order.po_number}`);
+                                toast.error(`Gagal menghapus data penerimaan barang ${good_receipt.receipt_number}`);
                             }
                         },
                     });
@@ -289,7 +354,7 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
             }
         },
 
-        approvalPurchaseOrder(slug: string, purchase_order: Partial<PurchaseOrderApproval>) {
+        approvalGoodReceipt(slug: string, good_receipt: Partial<GoodReceiptApproval>) {
             this.isLoading = true;
 
             const formatDateWithCurrentTime = (dateString: string | undefined | null) => {
@@ -302,12 +367,12 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                 return inputDate.toISOString().slice(0, 19).replace('T', ' ');
             };
 
-            const formDataEdit = new FormData();
+            const formDataApproval = new FormData();
 
             const payload = {
-                ...purchase_order,
-                ack_date: formatDateWithCurrentTime(purchase_order.ack_date),
-                reject_date: formatDateWithCurrentTime(purchase_order.reject_date),
+                ...good_receipt,
+                ack_date: formatDateWithCurrentTime(good_receipt.ack_date),
+                reject_date: formatDateWithCurrentTime(good_receipt.reject_date),
             };
 
             Object.entries(payload).forEach(([key, value]) => {
@@ -322,12 +387,12 @@ export const usePurchaseOrderStore = defineStore('purchase_order', {
                         formattedValue = String(value);
                     }
 
-                    formDataEdit.append(key, formattedValue);
+                    formDataApproval.append(key, formattedValue);
                 }
             });
 
-            formDataEdit.append('_method', 'PATCH');
-            router.post(route('admin.inventory.purchase_order.approval.submit', { purchase_order: slug }), formDataEdit, {
+            formDataApproval.append('_method', 'PATCH');
+            router.post(route('admin.inventory.good_receipt.approval.submit', { good_receipt: slug }), formDataApproval, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

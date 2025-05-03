@@ -4,7 +4,7 @@ const props = defineProps<{
     type?: 'submit' | 'button' | 'reset'
     text?: string
     loadingText?: string
-    color?: 'blue' | 'red' | 'green' | 'orange' | 'emerald'
+    color?: 'blue' | 'red' | 'green' | 'orange' | 'emerald' | 'gray'
 }>()
 
 const colorClass = {
@@ -32,10 +32,15 @@ const colorClass = {
         base: 'bg-emerald-600 dark:bg-emerald-500',
         hover: 'hover:bg-emerald-700 dark:hover:bg-emerald-600',
         ring: 'focus:ring-emerald-500 dark:focus:ring-emerald-400'
+    },
+    gray: {
+        base: 'bg-gray-600 dark:bg-gray-500',
+        hover: 'hover:bg-gray-700 dark:hover:bg-gray-600',
+        ring: 'focus:ring-gray-500 dark:focus:ring-gray-400'
     }
 }
 
-const currentColor = colorClass[props.color || 'blue']
+const currentColor = colorClass[props.color || 'gray']
 </script>
 
 <template>

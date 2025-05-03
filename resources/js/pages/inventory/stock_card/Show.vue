@@ -46,24 +46,9 @@ const getUnitName = (detail: StockCardDetail) => {
     return detail.unit?.name || 'N/A';
 };
 
+
 const getReferenceTypeLabel = (type: string) => {
     return referenceTypeLabels[type] || type;
-};
-
-const getStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
-        case 'MASTER_BARU':
-        case 'PEMBELIAN_BARANG':
-            return 'green';
-        case 'PENJUALAN':
-        case 'PENERIMAAN_BARANG':
-            return 'yellow';
-        case 'PENGELUARAN_BARANG':
-        case 'STOCK_OPNAME':
-            return 'red';
-        default:
-            return 'gray';
-    }
 };
 </script>
 
