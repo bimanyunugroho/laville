@@ -10,6 +10,7 @@ enum ReferencesStockCardEnum: string
     case PENERIMAAN_BARANG = 'PENERIMAAN_BARANG';
     case PENGELUARAN_BARANG = 'PENGELUARAN_BARANG';
     case STOCK_OPNAME = 'STOCK_OPNAME';
+    case TUTUP_PERIODE = 'TUTUP_PERIODE';
 
     public static function values(): array
     {
@@ -24,7 +25,8 @@ enum ReferencesStockCardEnum: string
             self::PENJUALAN => 'PENJUALAN',
             self::PENERIMAAN_BARANG => 'PENERIMAAN_BARANG',
             self::PENGELUARAN_BARANG => 'PENGELUARAN_BARANG',
-            self::STOCK_OPNAME => 'STOCK_OPNAME'
+            self::STOCK_OPNAME => 'STOCK_OPNAME',
+            self::TUTUP_PERIODE => 'TUTUP_PERIODE'
         };
     }
 }

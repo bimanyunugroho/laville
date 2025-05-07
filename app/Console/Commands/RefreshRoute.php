@@ -37,17 +37,6 @@ class RefreshRoute extends Command
         $this->info('Optimizing...');
         Artisan::call('optimize', [], $this->getOutput());
 
-        $this->info('Running composer dev build...');
-        $process = Process::fromShellCommandline('composer run dev');
-        $process->setTimeout(null); // Optional: disable timeout
-        $process->run(function ($type, $buffer) {
-            echo $buffer;
-        });
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
         $this->info('✅ All steps completed successfully!');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GoodReceiptController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\StockCardController;
+use App\Http\Controllers\Admin\StockOpnameController;
 use App\Http\Controllers\Admin\StockOutController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UnitController;
@@ -51,6 +52,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::resource('stock_out', StockOutController::class);
         Route::get('stock_out/{stock_out}/approval', [StockOutController::class, 'showApprovalForm'])->name('stock_out.approval.view');
         Route::patch('stock_out/{stock_out}/approval', [StockOutController::class, 'submitApproval'])->name('stock_out.approval.submit');
+
+        // Stock Opname (Stock Opname)
+        Route::resource('stock_opname', StockOpnameController::class);
+        Route::get('stock_opname/{stock_opname}/approval', [StockOpnameController::class, 'showApprovalForm'])->name('stock_opname.approval.view');
+        Route::patch('stock_opname/{stock_opname}/approval', [StockOpnameController::class, 'submitApproval'])->name('stock_opname.approval.submit');
+        Route::get('stock_opname/{stock_opname}/validator', [StockOpnameController::class, 'showValidatorForm'])->name('stock_opname.validator.view');
+        Route::patch('stock_opname/{stock_opname}/validator', [StockOpnameController::class, 'submitValidator'])->name('stock_opname.validator.submit');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {
