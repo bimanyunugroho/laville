@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatusRunningCurrentStockEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,5 +57,18 @@ class StockCard extends Model
     public function stockCardDetails()
     {
         return $this->hasMany(StockCardDetail::class);
+    }
+
+    public function scopeActiveByProduct($query, $productId)
+    {
+        return $query->where('product_id', $productId)
+            ->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+    }
+
+    public function scopeActiveByStockCard($query, $month, $year)
+    {
+        return $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value)
+            ->where('month', $month)
+            ->where('year', $year);
     }
 }

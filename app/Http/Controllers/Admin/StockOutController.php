@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\StatusNotesStockOutEnum;
+use App\Enums\StatusRunningCurrentStockEnum;
 use App\Enums\StatusStockOutEnum;
 use App\Events\StockOutApproved;
 use App\Helpers\PaginationData;
@@ -75,7 +76,11 @@ class StockOutController extends Controller
             ->whereHas('unitConversions', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->with(['defaultUnit', 'unitConversions', 'currentStocks'])
+            ->with(['defaultUnit', 'unitConversions',
+                'currentStocks' => function ($query) {
+                    $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+                }
+            ])
             ->get();
         $dataUnitConversions = UnitConversion::withoutTrashed()
             ->whereHas('product', function ($query) {
@@ -142,10 +147,12 @@ class StockOutController extends Controller
             'user',
             'userAck',
             'userReject',
-            'details.product.currentStocks',
-            'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.unit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            }
         ]);
 
         return Inertia::render('inventory/stock_out/Show', [
@@ -165,10 +172,12 @@ class StockOutController extends Controller
             'user',
             'userAck',
             'userReject',
-            'details.product.currentStocks',
-            'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.unit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            },
         ]);
 
         $dataSuppliers = Supplier::withoutTrashed()->get();
@@ -176,7 +185,11 @@ class StockOutController extends Controller
             ->whereHas('unitConversions', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->with(['defaultUnit', 'unitConversions', 'currentStocks'])
+            ->with(['defaultUnit', 'unitConversions',
+                'currentStocks' => function ($query) {
+                    $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+                }
+            ])
             ->get();
         $dataUnitConversions = UnitConversion::withoutTrashed()
             ->whereHas('product', function ($query) {
@@ -223,7 +236,7 @@ class StockOutController extends Controller
                 $stockOut->details()->delete();
                 $stockOut->details()->createMany($validatedData['details']);
             }
-            
+
             DB::commit();
 
             return redirect()->route('admin.inventory.stock_out.index')->with('success', 'Data pengeluaran barang berhasil diubah!');
@@ -249,10 +262,12 @@ class StockOutController extends Controller
             'user',
             'userAck',
             'userReject',
-            'details.product.currentStocks',
-            'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.unit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            },
         ]);
 
         $statusnStockOuts = collect(StatusStockOutEnum::cases())->map(function ($statusnStockOut) {

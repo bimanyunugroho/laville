@@ -7,6 +7,7 @@ use App\Enums\ReferencesStockCardEnum;
 use App\Enums\StatusStockOpnameDetailEnum;
 use App\Enums\StatusRunningCurrentStockEnum;
 use App\Events\StockOpnameApproved;
+use App\Models\ClosedPeriod;
 use App\Models\CurrentStock;
 use App\Models\StockCard;
 use Carbon\Carbon;
@@ -31,8 +32,9 @@ class GenerateStockCardFromStockOpname
         $stockOpname = $event->stockOpname;
         $noStockOpnameOrder = $stockOpname->so_number;
         $transactionDate = $stockOpname->ack_date ?? now();
-        $month = Carbon::parse($transactionDate)->month;
-        $year = Carbon::parse($transactionDate)->year;
+        $activePeriod = ClosedPeriod::periodIsActive()->select('month', 'year')->first();
+        $month = $activePeriod->month;
+        $year = $activePeriod->year;
 
         foreach ($stockOpname->details as $detail) {
             // Dapatkan data yang diperlukan
@@ -46,96 +48,103 @@ class GenerateStockCardFromStockOpname
             // Jika tidak ada perbedaan, tetap catat dengan movement_type TETAP
             $isZeroDifference = ($differenceStock == 0);
 
-            // Cari atau buat StockCard
-            $stockCard = StockCard::firstOrCreate(
-                [
-                    'product_id' => $product->id,
-                    'month' => $month,
-                    'year' => $year,
-                ],
-                [
-                    'beginning_balance' => 0,
-                    'in_balance' => 0,
-                    'out_balance' => 0,
-                    'ending_balance' => 0,
-                    'beginning_base_balance' => 0,
-                    'in_base_balance' => 0,
-                    'out_base_balance' => 0,
-                    'ending_base_balance' => 0,
-                    'status_running' => StatusRunningCurrentStockEnum::STOCK_OPNAME->value,
-                ]
-            );
+            $stockCardActiveByProduct = StockCard::activeByProduct($product->id)->first();
 
-            // Tentukan tipe pergerakan berdasarkan status (MATCH, OVERSTOCK, atau SHORTAGE)
-            $movementType = '';
-            if ($isZeroDifference) {
-                // Jika physical_stock = system_stock (MATCH) - tidak ada perubahan stok
-                $movementType = MovementTypeStockCardEnum::MASUK->value; // Assuming you have this enum value
-            } else if ($differenceStock > 0) {
-                // Jika physical_stock > system_stock (OVERSTOCK) - tambahkan stok
-                $movementType = MovementTypeStockCardEnum::MASUK->value;
-                $stockCard->in_balance += abs($differenceStock);
-                $stockCard->in_base_balance += abs($differenceStockBase);
-            } else {
-                // Jika physical_stock < system_stock (SHORTAGE) - kurangi stok
-                $movementType = MovementTypeStockCardEnum::KELUAR->value;
-                $stockCard->out_balance += abs($differenceStock);
-                $stockCard->out_base_balance += abs($differenceStockBase);
-            }
+            if ($stockCardActiveByProduct) {
+                // Cari atau buat StockCard
+                $stockCard = StockCard::firstOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'month' => $month,
+                        'year' => $year,
+                    ],
+                    [
+                        'beginning_balance' => 0,
+                        'in_balance' => 0,
+                        'out_balance' => 0,
+                        'ending_balance' => 0,
+                        'beginning_base_balance' => 0,
+                        'in_base_balance' => 0,
+                        'out_base_balance' => 0,
+                        'ending_base_balance' => 0,
+                        'status_running' => StatusRunningCurrentStockEnum::STOCK_OPNAME->value,
+                    ]
+                );
 
-            // Hitung ulang ending balance
-            $stockCard->ending_balance = $stockCard->beginning_balance + $stockCard->in_balance - $stockCard->out_balance;
-            $stockCard->ending_base_balance = $stockCard->beginning_base_balance + $stockCard->in_base_balance - $stockCard->out_base_balance;
-            $stockCard->status_running = StatusRunningCurrentStockEnum::STOCK_OPNAME->value;
+                // Tentukan tipe pergerakan berdasarkan status (MATCH, OVERSTOCK, atau SHORTAGE)
+                $movementType = '';
+                if ($isZeroDifference) {
+                    // Jika physical_stock = system_stock (MATCH) - tidak ada perubahan stok
+                    $movementType = MovementTypeStockCardEnum::MASUK->value; // Assuming you have this enum value
+                } else if ($differenceStock > 0) {
+                    // Jika physical_stock > system_stock (OVERSTOCK) - tambahkan stok
+                    $movementType = MovementTypeStockCardEnum::MASUK->value;
+                    $stockCard->in_balance += abs($differenceStock);
+                    $stockCard->in_base_balance += abs($differenceStockBase);
+                } else {
+                    // Jika physical_stock < system_stock (SHORTAGE) - kurangi stok
+                    $movementType = MovementTypeStockCardEnum::KELUAR->value;
+                    $stockCard->out_balance += abs($differenceStock);
+                    $stockCard->out_base_balance += abs($differenceStockBase);
+                }
 
-            $stockCard->save();
+                // Hitung ulang ending balance
+                $stockCard->ending_balance = $stockCard->beginning_balance + $stockCard->in_balance - $stockCard->out_balance;
+                $stockCard->ending_base_balance = $stockCard->beginning_base_balance + $stockCard->in_base_balance - $stockCard->out_base_balance;
+                $stockCard->status_running = StatusRunningCurrentStockEnum::STOCK_OPNAME->value;
 
-            // Buat detail stock card
-            $stockCard->stockCardDetails()->create([
-                'reference_id' => $detail->id,
-                'reference_type' => get_class($detail),
-                'reference_status' => ReferencesStockCardEnum::STOCK_OPNAME->value,
-                'unit_id' => $unit->id,
-                'transaction_date' => $transactionDate,
-                'movement_type' => $movementType,
-                'quantity' => abs($differenceStock),
-                'base_quantity' => abs($differenceStockBase),
-                'balance_quantity' => $stockCard->ending_balance,
-                'balance_base_quantity' => $stockCard->ending_base_balance,
-                'notes' => 'SO @' . $noStockOpnameOrder . ' (' . $detail->status . ')',
-            ]);
+                $stockCard->save();
 
-            // Update current stock
-            $currentStock = CurrentStock::firstOrCreate(
-                [
-                    'product_id' => $product->id,
+                // Buat detail stock card
+                $stockCard->stockCardDetails()->create([
+                    'reference_id' => $detail->id,
+                    'reference_type' => get_class($detail),
+                    'reference_status' => ReferencesStockCardEnum::STOCK_OPNAME->value,
                     'unit_id' => $unit->id,
-                    'month' => $month,
-                    'year' => $year,
-                ],
-                [
-                    'quantity' => 0,
-                    'base_quantity' => 0,
-                    'status_running' => StatusRunningCurrentStockEnum::STOCK_OPNAME->value,
-                ]
-            );
-
-            // Sesuaikan stok saat ini berdasarkan selisih
-            if ($isZeroDifference) {
-                // Tidak ada perubahan stok jika MATCH
-                // Namun tetap catat bahwa stock opname telah dilakukan
-            } else if ($differenceStock > 0) {
-                // Tambahkan stok jika OVERSTOCK
-                $currentStock->quantity += abs($differenceStock);
-                $currentStock->base_quantity += abs($differenceStockBase);
-            } else {
-                // Kurangi stok jika SHORTAGE
-                $currentStock->quantity -= abs($differenceStock);
-                $currentStock->base_quantity -= abs($differenceStockBase);
+                    'transaction_date' => $transactionDate,
+                    'movement_type' => $movementType,
+                    'quantity' => abs($differenceStock),
+                    'base_quantity' => abs($differenceStockBase),
+                    'balance_quantity' => $stockCard->ending_balance,
+                    'balance_base_quantity' => $stockCard->ending_base_balance,
+                    'notes' => '@' . $noStockOpnameOrder . ' (' . $detail->status . ')',
+                ]);
             }
 
-            $currentStock->status_running = StatusRunningCurrentStockEnum::STOCK_OPNAME->value;
-            $currentStock->save();
+            $currentStockActiveByProductCurrent = CurrentStock::activeByProductCurrent($product->id)->first();
+            if ($currentStockActiveByProductCurrent) {
+                // Update current stock
+                $currentStock = CurrentStock::firstOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'unit_id' => $unit->id,
+                        'month' => $month,
+                        'year' => $year,
+                    ],
+                    [
+                        'quantity' => 0,
+                        'base_quantity' => 0,
+                        'status_running' => StatusRunningCurrentStockEnum::STOCK_OPNAME->value,
+                    ]
+                );
+
+                // Sesuaikan stok saat ini berdasarkan selisih
+                if ($isZeroDifference) {
+                    // Tidak ada perubahan stok jika MATCH
+                    // Namun tetap catat bahwa stock opname telah dilakukan
+                } else if ($differenceStock > 0) {
+                    // Tambahkan stok jika OVERSTOCK
+                    $currentStock->quantity += abs($differenceStock);
+                    $currentStock->base_quantity += abs($differenceStockBase);
+                } else {
+                    // Kurangi stok jika SHORTAGE
+                    $currentStock->quantity -= abs($differenceStock);
+                    $currentStock->base_quantity -= abs($differenceStockBase);
+                }
+
+                $currentStock->status_running = StatusRunningCurrentStockEnum::STOCK_OPNAME->value;
+                $currentStock->save();
+            }
         }
     }
 }

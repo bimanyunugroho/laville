@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\StatusRunningCurrentStockEnum;
 use App\Enums\StatusStockOpnameDetailEnum;
 use App\Enums\StatusStockOpnameEnum;
 use App\Events\StockOpnameApproved;
@@ -87,7 +88,11 @@ class StockOpnameController extends Controller
             ->whereHas('unitConversions', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->with(['defaultUnit', 'unitConversions', 'currentStocks'])
+            ->with(['defaultUnit', 'unitConversions',
+                'currentStocks' => function ($query) {
+                    $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+                }
+            ])
             ->get();
 
         $dataUnitConversions = UnitConversion::withoutTrashed()
@@ -177,17 +182,23 @@ class StockOpnameController extends Controller
             'userAck',
             'userReject',
             'details.product',
-            'details.product.currentStocks',
             'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            }
         ]);
 
         $dataProducts = Product::withoutTrashed()
             ->whereHas('unitConversions', function ($query) {
                 $query->whereNull('deleted_at');
             })
-            ->with(['defaultUnit', 'unitConversions', 'currentStocks'])
+            ->with(['defaultUnit', 'unitConversions',
+                'currentStocks' => function ($query) {
+                    $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+                }
+            ])
             ->get();
 
         $dataUnitConversions = UnitConversion::withoutTrashed()
@@ -261,10 +272,12 @@ class StockOpnameController extends Controller
             'userAck',
             'userReject',
             'details.product',
-            'details.product.currentStocks',
             'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            }
         ]);
 
         $statusStockOpname = collect(StatusStockOpnameEnum::cases())->map(function ($statusStockOpnameDetail) {
@@ -309,10 +322,12 @@ class StockOpnameController extends Controller
             'userAck',
             'userReject',
             'details.product',
-            'details.product.currentStocks',
             'details.unit',
             'details.product.unitConversions.fromUnit',
-            'details.product.unitConversions.toUnit'
+            'details.product.unitConversions.toUnit',
+            'details.product.currentStocks' => function ($query) {
+                $query->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+            }
         ]);
 
         $statusStockOpname = collect(StatusStockOpnameEnum::cases())->map(function ($statusStockOpnameDetail) {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ClosedPeriodController;
 use App\Http\Controllers\Admin\CurrentStockController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -20,7 +21,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'check.closed.period', 'check.stock.opname.period'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('master')->name('master.')->group(function () {
@@ -59,6 +60,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::patch('stock_opname/{stock_opname}/approval', [StockOpnameController::class, 'submitApproval'])->name('stock_opname.approval.submit');
         Route::get('stock_opname/{stock_opname}/validator', [StockOpnameController::class, 'showValidatorForm'])->name('stock_opname.validator.view');
         Route::patch('stock_opname/{stock_opname}/validator', [StockOpnameController::class, 'submitValidator'])->name('stock_opname.validator.submit');
+    });
+
+    Route::prefix('account')->name('account.')->group(function(){
+        Route::resource('closed_period', ClosedPeriodController::class);
+        Route::get('closed_period/{closed_period}/approval', [ClosedPeriodController::class, 'showApprovalForm'])->name('closed_period.approval.view');
+        Route::patch('closed_period/{closed_period}/approval', [ClosedPeriodController::class, 'submitApproval'])->name('closed_period.approval.submit');
+        Route::patch('closed_period/{closed_period}/closed', [ClosedPeriodController::class, 'closedPeriod'])->name('closed_period.closed.submit');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {
