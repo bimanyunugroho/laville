@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\CheckClosedPeriod;
+use App\Http\Middleware\CheckStockOpnamePeriod;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -19,7 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
-            AddLinkHeadersForPreloadedAssets::class,
+            AddLinkHeadersForPreloadedAssets::class
+        ]);
+
+        $middleware->alias([
+            'check.closed.period' => CheckClosedPeriod::class,
+            'check.stock.opname.period' => CheckStockOpnamePeriod::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -9,6 +9,7 @@ const statusColorMap: Record<string, string> = {
   MASTER_BARU: 'bg-blue-100 text-blue-800',
   SEDANG_PROSES: 'bg-orange-100 text-orange-800',
   SEDANG_BERJALAN: 'bg-green-100 text-green-800',
+  STOCK_OPNAME: 'bg-yellow-100 text-yellow-800',
   SUDAH_BERAKHIR: 'bg-red-100 text-red-800',
 };
 

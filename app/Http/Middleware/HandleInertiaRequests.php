@@ -58,6 +58,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
+            'closedPeriodMessage' => $request->get('closedPeriodMessage', null),
+            'noPeriodExists' => $request->get('noPeriodExists', false)
         ];
     }
 }

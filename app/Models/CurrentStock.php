@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatusRunningCurrentStockEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -46,11 +47,15 @@ class CurrentStock extends Model
     {
         return $this->belongsTo(Product::class);
     }
-    
+
     public function unit()
     {
         return $this->belongsTo(Unit::class);
     }
 
-
+    public function scopeActiveByProductCurrent($query, $productId)
+    {
+        return $query->where('product_id', $productId)
+            ->where('status_running', '!=', StatusRunningCurrentStockEnum::SUDAH_BERAKHIR->value);
+    }
 }

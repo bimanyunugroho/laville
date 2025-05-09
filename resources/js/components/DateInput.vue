@@ -58,6 +58,7 @@ watch(selectedDate, (newVal) => {
             :disabled="props.disabled"
             format="dd/MM/yyyy"
             :enable-time-picker="false"
+            auto-apply
             :class="[
                 'block w-full p-2 text-sm text-gray-900 dark:text-white border rounded-lg bg-gray-50 dark:bg-gray-800 focus:ring-blue-500 focus:border-blue-500 vue-datepicker',
                 props.error ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'

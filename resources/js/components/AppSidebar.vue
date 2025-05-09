@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon, Package2, FileText, HandCoins, PackageMinus } from 'lucide-vue-next';
+import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon, Package2, FileText, HandCoins, PackageMinus, ClipboardPen, LockKeyhole } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed, ref, watch } from 'vue';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -19,6 +19,7 @@ const sidebar = useSidebar();
 // Navigation
 const mainNavItems: NavItem[] = [
     { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
+    { title: 'Setting Periode', href: '/admin/account/closed_period', icon: LockKeyhole }
 ];
 
 const masterNavItems: NavItem[] = [
@@ -32,12 +33,13 @@ const inventoryNavItems: NavItem[] = [
     { title: 'Order Pembelian', href: '/admin/inventory/purchase_order', icon: Package2 },
     { title: 'Penerimaan Barang', href: '/admin/inventory/good_receipt', icon: HandCoins },
     { title: 'Pengeluaran Barang', href: '/admin/inventory/stock_out', icon: PackageMinus },
+    { title: 'Stock Opname', href: '/admin/inventory/stock_opname', icon: ClipboardPen },
     { title: 'Kartu Stock', href: '/admin/inventory/stock_card', icon: FileText },
 ];
 
 const transaksiNavItems: NavItem[] = [
     { title: 'Pelanggan', href: '/admin/transaksi/customer', icon: User2 }
-]
+];
 
 const footerNavItems: NavItem[] = [
     { title: `Laravel v${laravelVersion.value}`, href: '', icon: Code },

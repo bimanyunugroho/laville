@@ -12,6 +12,7 @@ import { useStockCardStore } from '@/stores/stockCardStore';
 import DateOnlyMonthInput from '@/components/DateOnlyMonthInput.vue';
 import DateOnlyYearInput from '@/components/DateOnlyYearInput.vue';
 import { getMonthName } from '@/helpers/dateStringHelper';
+import BadgeStatusRunning from '@/components/BadgeStatusRunning.vue';
 
 const props = defineProps<StockCardPageProps>();
 const stockCardStore = useStockCardStore();
@@ -84,6 +85,8 @@ watch(() => props.stock_cards, (newStockCards) => {
                                             Periode</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                             Unit</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                            Status</th>
                                         <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                                             Begining Balance</th>
                                         <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
@@ -140,6 +143,10 @@ watch(() => props.stock_cards, (newStockCards) => {
                                                 <span class="text-xs text-gray-500 dark:text-gray-400">Kode: {{
                                                     stock_card.product?.defaultUnit?.code || '' }}</span>
                                             </div>
+                                        </td>
+                                        <td
+                                            class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-700 dark:text-gray-200">
+                                            <BadgeStatusRunning :status="stock_card.status_running" />
                                         </td>
                                         <td
                                             class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-700 dark:text-gray-200">
