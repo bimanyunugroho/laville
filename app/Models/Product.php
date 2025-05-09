@@ -69,4 +69,9 @@ class Product extends Model
     {
         return $this->morphMany(StockCardDetail::class, 'reference');
     }
+
+    public function getProductId()
+    {
+        return $this->id;
+    }
 }

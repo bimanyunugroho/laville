@@ -29,17 +29,6 @@ class RefreshSetup extends Command
         $this->info('Seeding database...');
         Artisan::call('db:seed', [], $this->getOutput());
 
-        $this->info('Running composer dev build...');
-        $process = Process::fromShellCommandline('composer run dev');
-        $process->setTimeout(null); // Optional: disable timeout
-        $process->run(function ($type, $buffer) {
-            echo $buffer;
-        });
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
         $this->info('✅ All steps completed successfully!');
     }
 }
