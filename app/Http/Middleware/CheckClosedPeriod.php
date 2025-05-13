@@ -31,6 +31,7 @@ class CheckClosedPeriod
             'admin.account.closed_period.destroy',
             'admin.account.closed_period.approval.view',
             'admin.account.closed_period.approval.submit',
+            'admin.account.closed_period.closed.submit'
         ];
 
         // Mendapatkan nama rute saat ini

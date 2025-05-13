@@ -34,4 +34,9 @@ class Customer extends Model
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

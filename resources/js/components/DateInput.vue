@@ -6,7 +6,7 @@ import '@vuepic/vue-datepicker/dist/main.css';
 interface Props {
     modelValue: string | Date | null;
     id: string;
-    label: string;
+    label?: string;
     placeholder?: string;
     required?: boolean;
     error?: string;

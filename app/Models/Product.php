@@ -74,4 +74,9 @@ class Product extends Model
     {
         return $this->id;
     }
+
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
 }

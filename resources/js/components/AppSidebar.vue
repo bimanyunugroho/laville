@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon, Package2, FileText, HandCoins, PackageMinus, ClipboardPen, LockKeyhole } from 'lucide-vue-next';
+import { LayoutGrid, Code, Terminal, Layers, Box, Ruler, ChevronDown, ChevronRight, Briefcase, Warehouse, Truck, User2, ShoppingBagIcon, Package2, FileText, HandCoins, PackageMinus, ClipboardPen, LockKeyhole, ShoppingCart } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed, ref, watch } from 'vue';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -38,7 +38,8 @@ const inventoryNavItems: NavItem[] = [
 ];
 
 const transaksiNavItems: NavItem[] = [
-    { title: 'Pelanggan', href: '/admin/transaksi/customer', icon: User2 }
+    { title: 'Pelanggan', href: '/admin/transaksi/customer', icon: User2 },
+    { title: 'Belanja', href: '/admin/transaksi/transaction', icon: ShoppingCart },
 ];
 
 const footerNavItems: NavItem[] = [

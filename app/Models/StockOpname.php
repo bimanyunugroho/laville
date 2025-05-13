@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatusStockOpnameEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -102,4 +103,15 @@ class StockOpname extends Model
     {
         return $this->hasMany(StockOpnameDetail::class);
     }
+
+    public function scopeValidateOrApprovmendStockOpname($query, $month, $year)
+    {
+        return $query->where(function ($q) {
+                $q->where('status', StatusStockOpnameEnum::VALIDATED->value)
+                ->orWhere('status', StatusStockOpnameEnum::COMPLETED->value);
+            })
+            ->where('month', $month)
+            ->where('year', $year);
+    }
+
 }

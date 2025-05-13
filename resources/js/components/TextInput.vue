@@ -3,7 +3,7 @@ interface Props {
     modelValue: string;
     id: string;
     type?: string;
-    label: string;
+    label?: string;
     placeholder?: string;
     required?: boolean;
     error?: string;
