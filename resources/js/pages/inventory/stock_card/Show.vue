@@ -11,6 +11,7 @@ import BadgeMovementType from '@/components/BadgeMovementType.vue';
 import BadgeReferenceStatus from '@/components/BadgeReferenceStatus.vue';
 import { defaultNavigator } from '@vueuse/core';
 import { formatterSplitLabel } from '@/helpers/formatterSplitLabel';
+import { Dock, FileArchive } from 'lucide-vue-next';
 
 const props = defineProps<{
     title: string;
@@ -233,8 +234,12 @@ const getReferenceTypeLabel = (type: string) => {
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                                {{ detail.notes || '-' }}
+                                                <div class="flex items-center space-x-2">
+                                                    <FileArchive class="w-4 h-4" />
+                                                    <span class="truncate">{{ detail.notes || '-' }}</span>
+                                                </div>
                                             </td>
+
                                         </tr>
                                     </tbody>
                                 </table>

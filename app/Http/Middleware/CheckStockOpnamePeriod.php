@@ -32,6 +32,7 @@ class CheckStockOpnamePeriod
             'admin.account.closed_period.destroy',
             'admin.account.closed_period.approval.view',
             'admin.account.closed_period.approval.submit',
+            'admin.account.closed_period.closed.submit',
             'admin.account.stock_card.index',
             'admin.account.stock_card.create',
             'admin.account.stock_card.store',
@@ -46,7 +47,7 @@ class CheckStockOpnamePeriod
         try {
             if (Schema::hasTable('stock_opnames')) {
                 // Check if there's an active period
-                $activePeriod = ClosedPeriod::periodIsActive()->first();
+                $activePeriod = ClosedPeriod::periodIsActive()->select('month', 'year')->first();
 
                 if (!$activePeriod) {
                     // No active period exists
@@ -63,7 +64,7 @@ class CheckStockOpnamePeriod
                     $year = $activePeriod->year ?? $currentDate->year;
 
                     // Use the scope to find active stock opname records
-                    $activeStockOpname = StockOpname::activeByStockCard($month, $year)->first();
+                    $activeStockOpname = StockOpname::validateOrApprovmendStockOpname($month, $year)->first();
 
                     if ($activeStockOpname) {
                         // Active stock opname exists, restrict access to certain routes

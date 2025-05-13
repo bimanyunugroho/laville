@@ -5,33 +5,40 @@ namespace App\Listeners;
 use App\Enums\MovementTypeStockCardEnum;
 use App\Enums\ReferencesStockCardEnum;
 use App\Enums\StatusRunningCurrentStockEnum;
-use App\Events\StockOutApproved;
+use App\Events\TransactionEvent;
 use App\Models\ClosedPeriod;
 use App\Models\CurrentStock;
 use App\Models\StockCard;
-use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class GenerateStockCardFromStockOut
+class GenerateStockCardFromTransaction
 {
+    /**
+     * Create the event listener.
+     */
     public function __construct()
     {
         //
     }
 
-    public function handle(StockOutApproved $event): void
+    /**
+     * Handle the event.
+     */
+    public function handle(TransactionEvent $event): void
     {
-        $stockOut = $event->stockOut;
-        $noStockOutOrder = $stockOut->stock_out_number;
-        $transactionDate = $stockOut->ack_date ?? now();
+        $transaction = $event->transaction;
+        $noInvoiceNumber = $transaction->invoice_number;
+        $transactionDate = $transaction->transaction_date ?? now();
         $activePeriod = ClosedPeriod::periodIsActive()->select('month', 'year')->first();
         $month = $activePeriod->month;
         $year = $activePeriod->year;
 
-        foreach ($stockOut->details as $detail) {
+        foreach ($transaction->details as $detail) {
             $product = $detail->product;
             $unit = $detail->unit;
-            $quantity = $detail->received_quantity;
-            $baseQuantity = $detail->received_base_quantity;
+            $quantity = $detail->quantity;
+            $baseQuantity = $detail->base_quantity;
 
             $stockCardActiveByProduct = StockCard::activeByProduct($product->id)->first();
 
@@ -63,12 +70,14 @@ class GenerateStockCardFromStockOut
                 $stockCard->ending_balance = $stockCard->beginning_balance + $stockCard->in_balance - $stockCard->out_balance;
                 $stockCard->ending_base_balance = $stockCard->beginning_base_balance + $stockCard->in_base_balance - $stockCard->out_base_balance;
 
+                $stockCard->status_running = StatusRunningCurrentStockEnum::SEDANG_BERJALAN->value;
+
                 $stockCard->save();
 
                 $stockCard->stockCardDetails()->create([
                     'reference_id' => $detail->id,
                     'reference_type' => get_class($detail),
-                    'reference_status' => ReferencesStockCardEnum::PENGELUARAN_BARANG->value,
+                    'reference_status' => ReferencesStockCardEnum::PENJUALAN->value,
                     'unit_id' => $unit->id,
                     'transaction_date' => $transactionDate,
                     'movement_type' => MovementTypeStockCardEnum::KELUAR->value,
@@ -76,7 +85,7 @@ class GenerateStockCardFromStockOut
                     'base_quantity' => $baseQuantity,
                     'balance_quantity' => $stockCard->ending_balance,
                     'balance_base_quantity' => $stockCard->ending_base_balance,
-                    'notes' => $noStockOutOrder,
+                    'notes' => $noInvoiceNumber,
                 ]);
             }
 
