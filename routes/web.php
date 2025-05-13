@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StockCardController;
 use App\Http\Controllers\Admin\StockOpnameController;
 use App\Http\Controllers\Admin\StockOutController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitConversionController;
 use Illuminate\Foundation\Application;
@@ -71,6 +72,7 @@ Route::middleware(['auth', 'verified', 'check.closed.period', 'check.stock.opnam
 
     Route::prefix('transaksi')->name('transaksi.')->group(function() {
         Route::resource('customer', CustomerController::class);
+        Route::resource('transaction', TransactionController::class);
     });
 });
 

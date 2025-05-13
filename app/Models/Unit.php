@@ -56,9 +56,14 @@ class Unit extends Model
     {
         return $this->hasMany(StockCardDetail::class);
     }
-    
+
     public function currentStocks()
     {
         return $this->hasMany(CurrentStock::class);
+    }
+
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
     }
 }

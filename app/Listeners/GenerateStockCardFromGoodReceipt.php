@@ -78,7 +78,7 @@ class GenerateStockCardFromGoodReceipt
                     'base_quantity' => $receivedBaseQuantity,
                     'balance_quantity' => $stockCard->ending_balance,
                     'balance_base_quantity' => $stockCard->ending_base_balance,
-                    'notes' => '@' . $noReceiptOrder,
+                    'notes' => $noReceiptOrder,
                 ]);
             }
 

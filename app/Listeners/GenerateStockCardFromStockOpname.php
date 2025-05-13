@@ -107,7 +107,7 @@ class GenerateStockCardFromStockOpname
                     'base_quantity' => abs($differenceStockBase),
                     'balance_quantity' => $stockCard->ending_balance,
                     'balance_base_quantity' => $stockCard->ending_base_balance,
-                    'notes' => '@' . $noStockOpnameOrder . ' (' . $detail->status . ')',
+                    'notes' => $noStockOpnameOrder . ' (' . $detail->status . ')',
                 ]);
             }
 
