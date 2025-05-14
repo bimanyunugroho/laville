@@ -13,6 +13,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import "vue-toastification/dist/index.css";
 import "vue-select/dist/vue-select.css";
+import VueApexCharts from 'vue3-apexcharts';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const pinia = createPinia();
@@ -28,6 +29,7 @@ createInertiaApp({
             .use(Toast, {})
             .component("v-select", vSelect)
             .component("VueDatePicker", VueDatePicker)
+            .component("ApexChart", VueApexCharts)
             .mount(el);
     },
     progress: {
