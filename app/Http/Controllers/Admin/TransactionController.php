@@ -6,6 +6,7 @@ use App\Enums\StatusRunningCurrentStockEnum;
 use App\Enums\TypePayment;
 use App\Enums\TypeSourceTransaction;
 use App\Events\TransactionEvent;
+use App\Helpers\ApiResponse;
 use App\Helpers\PaginationData;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\TransactionResource;
@@ -13,14 +14,15 @@ use App\Http\Resources\CustomerCollection;
 use App\Http\Resources\ProductCollection;
 use App\Models\Transaction;
 use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Customer;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class TransactionController extends Controller
@@ -167,12 +169,50 @@ class TransactionController extends Controller
             'details.product.unitConversions',
             'details.product.unitConversions.toUnit',
             'details.product.unitConversions.fromUnit',
-            'payments']);
+            'payments'
+        ]);
 
         return Inertia::render('transaksi/transaksi/Show', [
             'title' => 'Transaksi',
             'desc'  => 'Detail Transaksi ' . $transaction->invoice_number,
             'transaction'   => new TransactionResource($dataTransaction)
         ]);
+    }
+
+    public function invoice(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'slug' => ['required', 'string']
+        ]);
+
+        if ($validator->fails()) {
+            abort(404);
+        }
+
+        $invoiceNumber = trim($request->slug);
+
+        $invoiceTransaction = Transaction::with([
+            'customer',
+            'user',
+            'details',
+            'details.product',
+            'details.product.unitConversions',
+            'details.product.unitConversions.toUnit',
+            'details.product.unitConversions.fromUnit',
+            'payments'
+        ])
+            ->where('slug', $invoiceNumber)
+            ->first();
+
+        if (!$invoiceTransaction) {
+            abort(203);
+        }
+
+        $itemsCount = $invoiceTransaction->details->count();
+        $paperHeight = 150 + ($itemsCount * 20);
+        $pdf = Pdf::loadView('transaksi.invoice_print', ['invoice' => $invoiceTransaction]);
+        $pdf->setPaper([0, 0, 550, $paperHeight], 'portrait');
+        return $pdf->stream("invoice_$invoiceTransaction->slug.pdf");
+
     }
 }

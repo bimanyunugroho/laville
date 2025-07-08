@@ -73,6 +73,7 @@ Route::middleware(['auth', 'verified', 'check.closed.period', 'check.stock.opnam
     Route::prefix('transaksi')->name('transaksi.')->group(function() {
         Route::resource('customer', CustomerController::class);
         Route::resource('transaction', TransactionController::class);
+        Route::get('invoice', [TransactionController::class, 'invoice'])->name('invoice');
     });
 });
 

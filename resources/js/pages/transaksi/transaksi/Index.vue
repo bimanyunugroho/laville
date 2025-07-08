@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import Table from '@/components/Table.vue';
 import Pagination from '@/components/Pagination.vue';
-import { Eye, FileText, FileX, Pencil, Trash2 } from 'lucide-vue-next';
+import { Eye, FileText, FileX, Pencil, Printer, Trash2 } from 'lucide-vue-next';
 import { formatCurrency, formatNumber } from '@/helpers/currencyHelper';
 import { TransactionPageProps } from '@/types/transaction';
 import { useTransactionStore } from '@/stores/transactionStore';
@@ -191,6 +191,11 @@ watch(() => props.transactions, (newTransactions) => {
                                                     class="inline-flex items-center justify-center px-2 py-1 rounded-md text-sm font-medium text-purple-600 hover:text-white hover:bg-purple-600 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 transition-colors duration-150">
                                                 <Eye class="w-4 h-4" />
                                                 </Link>
+                                                <a
+                                                    :href="route('admin.transaksi.invoice', { slug: transaction.slug })" target="_blank"
+                                                    class="inline-flex items-center justify-center px-2 py-1 rounded-md text-sm font-medium text-blue-600 hover:text-white hover:bg-blue-600 dark:text-blue-400 dark:hover:text-white dark:hover:bg-blue-500 transition-colors duration-150">
+                                                <Printer class="w-4 h-4" />
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
