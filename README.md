@@ -197,10 +197,11 @@ docker ps
 docker exec -it laville_app bash
 composer install
 php artisan key:generate
-php artisan migrate
+php artisan migrate:refresh
 php artisan db:seed
 php artisan storage:link
 npm ci && npm run build
+chmod -R 777 storage bootstrap/cache
 exit
 ```
 
