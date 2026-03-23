@@ -52,12 +52,14 @@ Aplikasi ini menyediakan fitur monitoring penjualan, manajemen produk, transaksi
 
 ## 🧑‍💻 Tech Stack
 
-* Laravel v12
-* PHP ≥ 8.2
-* PostgreSQL
-* Node.js & NPM
-* Tailwind CSS
-* Chart.js / ApexCharts
+* **Laravel v12**
+* **InertiaJS with Vue.js**
+* **PHP ≥ 8.2**
+* **PostgreSQL**
+* **Node.js & NPM**
+* **Tailwind CSS**
+* **Chart.js / ApexCharts**
+* **Docker (Optional)**
 
 ---
 
@@ -65,15 +67,16 @@ Aplikasi ini menyediakan fitur monitoring penjualan, manajemen produk, transaksi
 
 Pastikan sudah menginstall:
 
-* PHP 8.2 atau lebih baru
-* Composer (latest)
-* Node.js (latest)
-* Database (PostgreSQL)
-* Laragon / XAMPP / sejenisnya
+* **PHP 8.2 atau lebih baru**
+* **Composer (latest)**
+* **Node.js (latest)**
+* **Database (PostgreSQL)**
+* **Laragon / XAMPP / sejenisnya**
+* **Docker (Optional)**
 
 ---
 
-## 🚀 Instalasi
+## 🚀 Instalasi Versi Local
 
 ### 1. Clone Repository
 
@@ -92,7 +95,7 @@ npm install
 ### 3. Setup Environment
 
 ```bash
-cp .env.example .env
+cp .env.local .env
 ```
 
 Edit file `.env`:
@@ -148,6 +151,79 @@ Akses di browser:
 
 ```
 http://laville.local
+```
+
+---
+
+## 🚀 Instalasi Versi Docker
+**Note:** 
+- Untuk proyek ini saya ada di lingkungan **Ubuntu**, jadi bisa saja kalau kalian pakai **Windows** kemungkinan akan sedikit berbeda. Jadi bisa disesuaikan saja ya.
+- Pastikan **PORT 5433**  pada **Postgres** tidak digunakan, karena nantinya akan bentrok
+- Kalau sudah digunakan **PORT 5433** bisa diubah dulu **docker-compose.yml** portnya misalkan 5439:5432 **(HOST PORT MESIN KAMU: HOST PORT CONTAINER BY DEFAULT 5432)**
+
+### 1. Clone Repository
+
+```bash
+git clone git@github.com:bimanyunugroho/laville.git
+cd laville
+```
+
+### 2. Setup Environment
+
+```bash
+cp .env.docker .env
+```
+
+### 3. Setup Docker
+
+```bash
+docker -v (Pastikan sudah terinstall dulu)
+
+docker compose up -d --build
+docker compose up -d
+docker ps
+
+
+- Pastikan sudah jalan semua container nya
+- Untuk container laville_queue ini akan error karena belum di migrate database
+- Nantinya akan normal kembali setelah di migrate
+```
+
+---
+
+### 4. Setup App Laravel in Docker Tahap 1
+
+```bash
+docker exec -it laville_app bash
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+npm ci && npm run build
+exit
+```
+
+---
+
+### 5. Setup App Laravel in Docker Tahap 2
+
+```bash
+docker compose down -v
+docker compose up -d
+docker ps
+
+- Semua container berjalan dengan normal setelah melakukan di point 4
+```
+
+---
+
+### 5. Jalankan Aplikasi
+
+Akses di browser:
+
+```
+http://localhost
 ```
 
 ---
