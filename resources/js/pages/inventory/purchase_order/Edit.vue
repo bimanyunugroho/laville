@@ -329,7 +329,7 @@ onMounted(() => {
                                     </div>
 
                                     <div class="mt-6">
-                                        <CheckboxInput id="is_active" v-model="formEditPurchaseOrder.is_active" label="Satuan Aktif" />
+                                        <CheckboxInput id="is_active" v-model="formEditPurchaseOrder.is_active" label="Status Aktif" />
                                     </div>
 
                                 </div>

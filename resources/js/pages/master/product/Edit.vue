@@ -127,7 +127,7 @@ const handleSubmit = () => {
                             <CheckboxInput
                                 id="is_active"
                                 v-model="newProduct.is_active"
-                                label="Satuan Aktif"
+                                label="Status Aktif"
                             />
 
                             <div class="flex items-center justify-end space-x-3 pt-4">

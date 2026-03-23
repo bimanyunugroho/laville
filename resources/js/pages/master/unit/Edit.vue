@@ -56,7 +56,7 @@ const handleSubmit = () => {
                             <TextInput id="name" v-model="updatedUnit.name" label="Nama Satuan"
                                 placeholder="Masukkan nama satuan" required />
 
-                            <CheckboxInput id="is_active" v-model="updatedUnit.is_active" label="Satuan Aktif" />
+                            <CheckboxInput id="is_active" v-model="updatedUnit.is_active" label="Status Aktif" />
 
                             <div class="flex items-center justify-end space-x-3 pt-4">
                                 <Link :href="route('admin.master.unit.index')" class="inline-flex justify-center rounded-md border border-gray-300
